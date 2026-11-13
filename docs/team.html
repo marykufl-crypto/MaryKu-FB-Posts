@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>工作台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0d13; --card:#11151d; --card-hi:#151a24; --border:#1d2430; --border-hi:#2c3546;
+    --text:#e8ecf3; --muted:#8a94a6; --faint:#5b6577; --accent:#5ea1ff; --green:#3fd68f;
+    --orange:#f0a33f; --pink:#ff6b9d; --red:#ff5c5c; --fire1:#ff8a3d; --fire2:#ff4d6d;
+    --font:'Inter',-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+    --disp:'Space Grotesk','Inter','PingFang SC','Microsoft YaHei',sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font); -webkit-font-smoothing:antialiased; }
+  ::selection { background:rgba(94,161,255,.3); }
+  ::-webkit-scrollbar { width:10px; } ::-webkit-scrollbar-thumb { background:#232c3b; border-radius:8px; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+  .ic { width:14px; height:14px; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; fill:none; flex:none; }
+
+  header { position:sticky; top:0; z-index:50; background:rgba(10,13,19,.86);
+    backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:13px 20px; }
+  .hrow { display:flex; flex-wrap:wrap; gap:10px; align-items:center; max-width:1200px; margin:0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; margin-right:auto; }
+  .mark { width:31px; height:31px; border-radius:9px; display:grid; place-items:center;
+    background:linear-gradient(135deg,var(--fire1),var(--fire2)); box-shadow:0 4px 16px rgba(255,92,80,.35); }
+  .mark .ic { width:17px; height:17px; color:#fff; }
+  h1 { font-family:var(--disp); font-size:16.5px; font-weight:700; line-height:1.15; }
+  h1 small { display:block; color:var(--faint); font-family:var(--font); font-weight:400; font-size:10.5px; }
+  .me { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); cursor:pointer;
+    background:var(--card); border:1px solid var(--border); border-radius:10px; padding:7px 12px;
+    transition:border-color .18s; }
+  .me:hover { border-color:var(--border-hi); }
+  .me b { color:var(--text); }
+
+  nav { display:flex; gap:7px; max-width:1200px; margin:12px auto 0; flex-wrap:wrap; }
+  .ntab { display:inline-flex; align-items:center; gap:7px; background:var(--card);
+    border:1px solid var(--border); border-radius:999px; padding:7px 16px; font-size:13.5px;
+    color:var(--muted); cursor:pointer; user-select:none; transition:all .18s; }
+  .ntab:hover { border-color:var(--border-hi); color:var(--text); }
+  .ntab.on { color:var(--text); background:linear-gradient(135deg,rgba(255,138,61,.15),rgba(255,77,109,.15));
+    border-color:rgba(255,120,90,.45); }
+
+  main { max-width:1200px; margin:22px auto; padding:0 20px; }
+  .page { display:none; } .page.on { display:block; }
+
+  .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .stat { flex:1; min-width:130px; background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:14px 16px; }
+  .stat .v { font-family:var(--disp); font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .stat .l { color:var(--faint); font-size:12px; margin-top:2px; }
+  .stat.sh .v { color:var(--orange); } .stat.dn .v { color:var(--green); } .stat.pd .v { color:var(--accent); }
+
+  section { background:var(--card); border:1px solid var(--border); border-radius:16px;
+    padding:16px 18px; margin-bottom:16px; }
+  section h2 { font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+  section h2 .ic { color:var(--orange); }
+  section h2 small { color:var(--faint); font-weight:400; font-size:11.5px; margin-left:auto; }
+  .row { display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--border);
+    font-size:13px; flex-wrap:wrap; }
+  .row .hookline { flex:1; min-width:200px; color:var(--text); overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; }
+  .row .hookline small { color:var(--faint); display:block; font-size:11px; margin-top:1px; }
+  .row .who2 { color:var(--accent); text-decoration:none; font-weight:600; font-size:12px; white-space:nowrap; }
+  .xb { font-family:var(--disp); font-weight:600; font-size:11px; color:var(--orange);
+    border:1px solid rgba(240,163,63,.4); background:rgba(240,163,63,.07); border-radius:99px;
+    padding:2px 8px; white-space:nowrap; }
+  .pill { display:inline-flex; align-items:center; gap:4px; background:#0c0f16; color:var(--muted);
+    border:1px solid var(--border); border-radius:9px; padding:5.5px 10px; font-size:11.5px;
+    cursor:pointer; text-decoration:none; font-family:var(--font); transition:all .18s; white-space:nowrap; }
+  .pill .ic { width:11px; height:11px; }
+  .pill:hover { color:var(--accent); border-color:rgba(94,161,255,.5); }
+  .pill.ok:hover { color:var(--green); border-color:rgba(63,214,143,.5); }
+  .pill.bad:hover { color:var(--red); border-color:rgba(255,92,92,.5); }
+  .none { color:var(--faint); font-size:13px; padding:14px 0 6px; }
+
+  .act { display:flex; gap:9px; padding:7px 0; border-top:1px solid var(--border);
+    font-size:12.5px; color:var(--muted); }
+  .act time { color:var(--faint); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .act b { color:var(--text); font-weight:600; }
+  .act .to { color:var(--orange); }
+
+  #radarWrap { height:calc(100vh - 150px); min-height:500px; border:1px solid var(--border);
+    border-radius:16px; overflow:hidden; }
+  #radarWrap iframe { width:100%; height:100%; border:0; }
+
+  .sop { max-width:820px; }
+  .sop h3 { font-size:15px; margin:22px 0 10px; display:flex; gap:8px; align-items:center; }
+  .sop h3 .ic { color:var(--orange); }
+  .sop ol { margin:0 0 8px 22px; color:var(--muted); font-size:13.5px; line-height:1.9; }
+  .sop ol b { color:var(--text); }
+  .sop p { color:var(--muted); font-size:13px; line-height:1.7; margin-bottom:6px; }
+  .sop table { border-collapse:collapse; font-size:13px; margin:8px 0; }
+  .sop td, .sop th { border:1px solid var(--border); padding:7px 14px; color:var(--muted); }
+  .sop th { color:var(--text); background:var(--card-hi); }
+
+  #mission { border:1px solid rgba(255,120,90,.35); border-radius:16px; padding:15px 18px;
+    margin-bottom:14px; background:linear-gradient(135deg,rgba(255,138,61,.10),rgba(255,77,109,.10)); }
+  #mission .mt { font-weight:600; font-size:14px; display:flex; gap:8px; align-items:center; }
+  #mission .mt .ic { color:var(--orange); }
+  #mission .md { color:var(--muted); font-size:12.5px; margin-top:5px; line-height:1.6; }
+  #mission .md b { color:var(--text); font-family:var(--disp); }
+  #overlay { position:fixed; inset:0; background:rgba(6,8,12,.88); backdrop-filter:blur(6px);
+    z-index:200; display:none; place-items:center; }
+  #overlay.show { display:grid; }
+  .obox { background:var(--card); border:1px solid var(--border-hi); border-radius:18px;
+    padding:28px 30px; width:min(92vw,380px); }
+  .obox h2 { font-family:var(--disp); font-size:18px; margin-bottom:6px; }
+  .obox p { color:var(--muted); font-size:13px; margin-bottom:16px; }
+  .obox input, .obox select { width:100%; background:#0c0f16; color:var(--text);
+    border:1px solid var(--border); border-radius:10px; padding:10px 13px; font-size:14px;
+    font-family:var(--font); margin-bottom:11px; }
+  .obox input:focus, .obox select:focus { border-color:var(--accent); outline:none; }
+  .obox button { width:100%; background:linear-gradient(135deg,var(--fire1),var(--fire2));
+    color:#fff; border:0; border-radius:10px; padding:11px; font-size:14px; font-weight:600;
+    font-family:var(--font); cursor:pointer; }
+  .obox button:active { transform:scale(.98); }
+
+  #toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(8px);
+    background:var(--card-hi); border:1px solid var(--border-hi); border-radius:11px;
+    padding:11px 20px; font-size:13px; display:none; z-index:300; opacity:0;
+    box-shadow:0 12px 32px rgba(0,0,0,.5); transition:opacity .2s, transform .2s; }
+  #toast.show { display:block; opacity:1; transform:translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce) { * { animation:none!important; transition:none!important; } }
+</style>
+</head>
+<body>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><path d="m10 8 6 4-6 4Z"/><rect x="2" y="4" width="20" height="16" rx="3"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+  <symbol id="i-radar" viewBox="0 0 24 24"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+</svg>
+<header>
+  <div class="hrow">
+    <div class="brand">
+      <div class="mark"><svg class="ic"><use href="#i-flame"/></svg></div>
+      <h1>工作台<small id="updated"></small></h1>
+    </div>
+    <div class="me" id="meBtn" title="点击修改身份">
+      <svg class="ic"><use href="#i-user"/></svg><span id="meLabel">未登记</span>
+    </div>
+  </div>
+  <nav>
+    <div class="ntab on" data-p="work"><svg class="ic"><use href="#i-clock"/></svg>今日工作</div>
+    <div class="ntab" data-p="radar"><svg class="ic"><use href="#i-radar"/></svg>爆款雷达</div>
+    <div class="ntab" data-p="sop"><svg class="ic"><use href="#i-book"/></svg>SOP</div>
+  </nav>
+</header>
+<main>
+  <div class="page on" id="p-work">
+    <div id="mission"></div>
+    <div class="stats">
+      <div class="stat pd"><div class="v" id="stPending">–</div><div class="l">未处理(待挑选)</div></div>
+      <div class="stat sh"><div class="v" id="stShoot">–</div><div class="l">拍摄中</div></div>
+      <div class="stat dn"><div class="v" id="stDone">–</div><div class="l">已处理</div></div>
+    </div>
+    <section id="secShoot">
+      <h2><svg class="ic"><use href="#i-video"/></svg>拍摄中队列<small>做完一条,点「完成」</small></h2>
+      <div id="shootList"></div>
+    </section>
+    <section id="secPick">
+      <h2><svg class="ic"><use href="#i-flame"/></svg>本周待挑选爆款 Top 8<small>看中就点「选中拍摄」,细看去爆款雷达</small></h2>
+      <div id="pickList"></div>
+    </section>
+  </div>
+  <div class="page" id="p-radar"><div id="radarWrap"></div></div>
+  <div class="page sop" id="p-sop">
+    <section>
+      <h3><svg class="ic"><use href="#i-flame"/></svg>SOP-01 · Marketer 每周选题流程(周一,约30分钟)</h3>
+      <ol>
+        <li>打开<b>爆款雷达</b>,点快筛「<b>真爆款 ×2+</b>」+「<b>近7天</b>」</li>
+        <li>看「爆款热词」确认本周主题方向(热词越多的主题越优先)</li>
+        <li>挑 <b>3–5 条</b>适合改编的。标准:话题跟我们相关 / Hook 可复制 / 我们拍得出来</li>
+        <li>每条点「<b>Brief</b>」复制 → 发到拍摄群</li>
+        <li>把选中的卡片<b>拖到「拍摄中」</b></li>
+        <li>明显不适合的拖「跳过」,保持未处理越少越好</li>
+      </ol>
+    </section>
+    <section>
+      <h3><svg class="ic"><use href="#i-video"/></svg>SOP-02 · Content Creator 拍摄改编流程(每条 ≤1天)</h3>
+      <ol>
+        <li>打开工作台「<b>今日工作</b>」,看拍摄中队列,从最旧的开始</li>
+        <li>打开原帖看 <b>3 遍</b>:第1遍看整体 / 第2遍拆 Hook(前3秒为什么让人停下) / 第3遍记结构(几个镜头、什么节奏)</li>
+        <li><b>改编不照抄</b>:换成我们的案例、口吻、行业。保留结构,替换内容</li>
+        <li>拍摄 → 剪辑。<b>前3秒必须有钩子</b>,字幕开头即出</li>
+        <li>发布后回到工作台,该条点「<b>完成</b>」</li>
+      </ol>
+    </section>
+    <section>
+      <h3><svg class="ic"><use href="#i-book"/></svg>SOP-03 · 状态定义(团队统一语言)</h3>
+      <table>
+        <tr><th>状态</th><th>意思</th><th>谁负责改</th></tr>
+        <tr><td>未处理</td><td>还没人筛选过</td><td>Marketer 每周清理</td></tr>
+        <tr><td>拍摄中</td><td>已选中,正在改编/拍摄/剪辑</td><td>Marketer 选中时拖入</td></tr>
+        <tr><td>已处理</td><td>已发布或已完成改编</td><td>Creator 完成时点</td></tr>
+        <tr><td>跳过</td><td>不适合我们,不再考虑</td><td>任何人</td></tr>
+      </table>
+    </section>
+    <section>
+      <h3><svg class="ic"><use href="#i-radar"/></svg>SOP-04 · 看到「引流」标签的帖子怎么学</h3>
+      <p>带「引流」标的帖子,重点<b>不是内容,是漏斗</b>。记录三件事:</p>
+      <ol>
+        <li>留言<b>关键词</b>是什么?(例:留言「Start」)</li>
+        <li>送的<b>诱饵</b>是什么?(模板 / 课程 / 清单)</li>
+        <li>之后导去<b>哪里</b>?(DM 自动回复 → 链接 → 报名页)</li>
+      </ol>
+      <p>好的打法直接抄结构,用我们的 GHL / ManyChat 实现。</p>
+    </section>
+    <section>
+      <h3><svg class="ic"><use href="#i-user"/></svg>SOP-05 · 竞对名单管理(发现好账号就加进来)</h3>
+      <ol>
+        <li>打开 Supabase「<b>competitors</b>」表,加一行</li>
+        <li><b>Username</b>:貼專頁網址最後那段(例:healingmuseumhk)或專頁主頁連結都行(不要貼貼文連結)</li>
+        <li><b>Tracker</b>:填 <b>FB</b></li>
+        <li><b>Active</b>:打勾✅ — <b>没勾不会抓</b></li>
+        <li>每周一自动生效;停止追踪 = 取消勾,不用删行</li>
+      </ol>
+      <p>加账号的标准:跟我们领域相关 / 内容有爆款相 / 值得学。发现雷达里某账号长期没爆款,把它 Active 取消,腾出额度换新的。</p>
+    </section>
+    <section>
+      <h3><svg class="ic"><use href="#i-user"/></svg>SOP-06 · 第一次设置 & 常见问题</h3>
+      <ol>
+        <li><b>登记身份:</b>第一次打开工作台会弹「你是谁」→ 输名字、选角色。这决定你看到的任务卡和排版</li>
+        <li><b>直接改状态:</b>雷达里把卡片拖到上方分类,或用卡片下拉选。看到绿色 ✓ 就成了。<b>不需要输任何密钥</b> —— 这套系统天生只允许改状态,改不了别的数据,所以安全无需登录</li>
+      </ol>
+      <p><b>常见问题:</b></p>
+      <table>
+        <tr><th>现象</th><th>原因</th><th>解决</th></tr>
+        <tr><td>改了状态没反应 / 报错</td><td>网络断了,或页面是旧版</td><td>刷新页面(Ctrl+Shift+R)再试</td></tr>
+        <tr><td>队友改的状态我看不到</td><td>页面最多 10 分钟同步一次</td><td>刷新页面即可;自己的改动是即时的</td></tr>
+        <tr><td>网页打不开 / 数据是空的</td><td>每周自动更新那天可能还在跑</td><td>等 1 小时后再开;还不行找老板看 GitHub Actions</td></tr>
+      </table>
+      <p>状态存在云端(Supabase),换电脑、关机都不会丢,全团队实时共享。</p>
+    </section>
+  </div>
+</main>
+<div id="overlay"><div class="obox">
+  <h2>👋 你是谁?</h2>
+  <p>登记一次,方便团队知道是谁在操作。</p>
+  <input id="oName" placeholder="你的名字" maxlength="20">
+  <select id="oRole">
+    <option value="Marketer">Marketer(选题/投放)</option>
+    <option value="Content Creator">Content Creator(拍摄/剪辑)</option>
+    <option value="Boss">Boss</option>
+  </select>
+  <button id="oSave">进入工作台</button>
+</div></div>
+<div id="toast"></div>
+<script id="data" type="application/json">[{"id": "fb_1587781286723217", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【Catch & Cap 📸 YLHK ？？週年有獎遊戲  】\n\n一齊同YLHK 慶祝生日啦🎂🥳！您知唔知道YLHK今年係幾多歲生日呢？即刻喺影片到搵返正確嘅歲數啦💜\n\n🔍玩法\n1. 讚好此帖文❤️\n2. 於留言區留下正確歲數嘅截圖，再送上一句生日祝福俾 YLHK\n\n第 1、3、6、9、12、13、15、18、21、24、27、30、33及36位答中嘅參加者，均可獲得YL紅人必備時尚手袋。🥳其中第 13 位答中嘅幸運兒更可額外獲得 Joy 複方精油5ml一支。\n\n條款及細則：\n- 活動截止時間為2026年11月3日晚上11時59分，逾期留言將不具備獲獎資格\n- 每個帳戶只限留言一次並不可修改答案。所有留言次序以YL Facebook 專頁紀錄之時間為準\n- 獎品不可更換、退回或兌換現金\n- 如有任何爭議，Young Living保留最終決定權\n---\n【Catch & Cap 📸 YLHK ？？ Anniversary Giveaway 】\n\nLet's celebrate YLHK's birthday together! 🎂🥳Do you know how old YLHK is this year? Watch the video carefully and capture the correct anniversary number! 💜\n\n🔍How to Play  \n1. Like this post❤️\n2. Leave a screenshot showing the correct anniversary number in the comments, along with a birthday message for YLHK\n\nThe 1st, 3rd, 6th, 9th, 12th, 13th, 15th, 18th, 21st, 24th, 27th, 30th, 33rd, and 36th participants who answer correctly will each receive a YL Must-have Modern Red Gift Bag ! For the 13th lucky winner will also receive a Joy Essential Oil Blend 5ml.\n\nTerms and C", "transcript": "", "brk": "開頭手法: 活動邀請\n結構: 慶祝活動宣佈 → 截圖留言簡單玩法 → 具體得獎名額與獎品\n為什麼火: 留言數高達272則，因設有指定名次送禮及豐富獎品吸引粉絲踴躍互動\n改編角度: 舉辦轉念金句截圖留言送精油活動，吸引粉絲留言互動並提升專頁熱度", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n每日忙住應付客人的需求同業績壓力，你有冇停低幾秒鐘，真正聽清楚自己內心嘅聲音？\n\n艾克哈特托勒喺《當下的力量》入面提到，當你的念頭靜落嚟，清明嘅力量就會自然浮現。\n\n今日可以試一個好簡單嘅小練習：放低手頭上嘅嘢，花三分鐘慢慢呼吸，感受一下空氣流入身體，然後再慢慢呼出嚟。\n\n唔洗急住去改變咩，純粹陪自己安靜幾分鐘。\n\n今日不妨試吓呢個呼吸練習，喺留言區同我分享一下你嘅體會。\n\n生活覺察 轉念 內在力量", "tags": "", "bait": true, "type": "Video", "likes": 193, "views": 7647, "shares": 1, "comments": 272, "er": 0.83, "followers": 56096, "date": "2026-10-28", "url": "https://www.facebook.com/reel/1138350548959209/", "video": true, "ratio": 0, "score": 1.81, "status": "未处理", "x": 4.6}, {"id": "fb_1062920529991028", "tracker": "Mary Ku 專頁", "competitor": "heungyau.incense", "caption": "【🇭🇰港人製香師走進日本工作坊】\n\n沒想過，製香也能成為連結日本與香港創作的契機🌿\n\n這次與「藝術在醫院」 Artinhospital HK 合作，走進越後妻有參與文化交流及製香工作坊，將香港植物、手工技藝與地方文化帶到日本。⛩️\n我們採集了在香港及日本生長的植物，再將它們揉製成一粒粒塔香。當地參加者透過親手製作，認識不同植物氣味及背後的地方故事🌳\n\n手工藝不只是創作，也能成為文化推廣、品牌交流及跨地域合作的媒介。\n\n下一站，我們將繼續以香氣和工藝為靈感，到不同地方分享故事。\n\n——\n特別嗚謝\n香港作家及藝術家 葉曉文 Human Ip \n為我們展示及提供荔枝窩種植的植物", "transcript": "", "brk": "開頭手法: 身份共鳴\n結構: 點出契機 → 描述過程 → 總結價值\n為什麼火: 結合港人身份與跨地域文化交流的特別經歷引起關注\n改編角度: 借用「本土元素結合海外見聞」的結構，分享生活覺察或轉念體悟", "my": "你想你將來的生活係點樣？你想成為一個點樣嘅人？\n\n每天在公司面對客戶和業績目標，回到家裡還要照顧家人，你是不是也常常覺得，自己的腳步停不下來，卻又不知道真正想去哪裡？\n\n我在《當下的力量》這本書的理解裡，看見一個很實用的 mindset：當你的念頭一直在未來擔憂或者在過去打轉，你的內在力量就會被分散。\n\n今天試著做一個簡單的小練習：在忙完手頭上的工作之後，花三分鐘坐在椅子上，閉上眼睛，什麼都不要想，只是把注意力放在你的呼吸上。\n\n感覺吸氣時胸口的起伏，吐氣時讓肩膀慢慢放鬆下來。\n\n當你的念頭靜落嚟，你會發現，清明的感覺會自然浮現，帶你重新看見自己的方向。\n\n今天不妨抽幾分鐘試試看，然後留意一下自己的身體有什麼感覺。\n\n生活覺察 轉念 內在力量", "tags": "", "bait": false, "type": "Video", "likes": 7, "views": 440, "shares": 1, "comments": 0, "er": 0.97, "followers": 822, "date": "2026-09-15", "url": "https://www.facebook.com/reel/1085441347661922/", "video": true, "ratio": 0, "score": 1.46, "status": "未处理", "x": 0}, {"id": "fb_1592041112963901", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【絕非AI💯Highland Flats農場經理Michael有禮物想送比您！】\n\n今年Holiday Catalog 2026特別為香港同澳門嘅品牌夥伴，準備咗一個來自美國愛達荷州Highland Flats農場嘅驚喜套裝🌲農場經理Michael Carter仲挑戰用廣東話同大家打招呼（真係親自講，絕非AI😆），同大家分享呢個套裝嘅特別之處，介紹4支針葉樹精油嘅魅力！\n\n跟住Michael嘅腳步，一齊漫步被山脈環抱嘅Highland Flats農場🎥🌳🌳\n\n🎁Highland Flats森林套裝將於明日（11月2日）中午12點，忠誠獎勵訂單搶先開售，數量有限，千萬不要錯過！\n---\n【100% not AI💯Michael has a gift for you from Highland Flats Farm!】\n\nThis Holiday Catalog 2026, we’ve prepared a surprise set from Highland Flats Farm in Idaho, U.S., exclusively for Hong Kong and Macau brand partners🌲! Farm Manager Michael Carter even challenged himself to greet everyone in Cantonese (he really spoke it himself, definitely not AI😆) to share what makes this set so special and introduce the charm of the 4 conifer essential oils!\n\nFollow Michael as we walk through the beautiful Highland Flats Farm, surrounded by mountains and forests🎥🌳🌳\n\n🎁The Highland Flats Forest Set will be available through Loyalty Rewards Orders from 12PM tomorrow (Nov 2). Quantities are limited. Don't miss out", "transcript": "", "brk": "開頭手法: 趣味懸念與身份共鳴\n結構: 趣味吸睛 → 獨家好物介紹 → 搶購呼籲\n為什麼火: 經理親講廣東話的真實感引發大量轉發\n改編角度: 結合覺察導師親自錄製的廣東話轉念語音作限量贈品吸引互動", "my": "", "tags": "YoungLiving, YLHK, HolidayCatalog2026, HighlandFlats, Farm", "bait": false, "type": "Video", "likes": 248, "views": 8731, "shares": 29, "comments": 19, "er": 0.53, "followers": 56096, "date": "2026-11-01", "url": "https://www.facebook.com/reel/1892117541972144/", "video": true, "ratio": 0, "score": 0.8, "status": "未处理", "x": 2.1}, {"id": "fb_1512523617561237", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "完成激光或微創療程後，想讓修復效果更上一層樓？✨用對時機，功效翻倍！🆙\n\n🌸黃金修復期\n療程後順利度過退紅期 (約 7–14 天，肌膚無傷口且處於穩定期），這時給予天然植萃滋養，修護功效加倍顯著！特別推薦被譽為「液態黃金」的 Helichrysum 永久花精油🌼富含「義大利酮」，具備卓越修護力，能深層滋養肌膚、維護健康屏障，並撫平細紋與淡化瑕疵！   \n\n💡穩定期 DIY 永久花面膜配方 (詳細步驟請向左滑動查看圖片！➡️)  \n* 熟牛油果 1/4 個\n* 蜂蜜 1 茶匙\n* 分餾椰子油或荷荷巴油 1 茶匙\n* 永久花精油 2 滴\n👉將牛油果搗碎後混合所有材料，敷於臉上15分鐘後以溫水洗淨，再塗上保濕霜，即時享受光滑水潤肌！\n\n⏰【倒數最後2天！九月限定星級優惠】\n優惠至9月30日止，錯過就恢復原價！快啲把握最後機會！🔥\n\n💛85折主打：永久花精油 5mL   \n優惠價 HK$650 / 68PV（原價 HK$765）   \n\n🌟Bonus PROMO滿額驚喜：\n* 滿 175PV：即送 舒緩複方精油 5mL 一瓶 (原價 HK$555)\n* 滿 200PV：再加送 呵護系列 - 永久花精油 10mL 一瓶 (原價 HK$895)\n* 滿 400PV：更可以 HK$270 優惠價 加購松鼠芳香噴霧器一台\n\n📩索取完整版《激光後精油黃金修護指引》想了解療程後不同階段的正確護理順序、穩定期其他修護精油，以及精華油調配比例？👇 即刻於下方留言 “Laser”，我們會立即 PM 為你送上完整護理手冊！📩\n\nHelichrysum 永久花🌼 https://bit.ly/3TWB0JO\nDeep Blue 舒緩複方💙 https://bit.ly/3hbWofr\nEVO Online Office 線上平台🛒 https://bit.ly/49DRp0i\nLatest News 最新消息👀 https://bit.ly/4e09dU1\n\nLooking to boost your post-laser or micro-invasive skin repair? Use essential oils at the right time for 🆙double the results! 💫\n\n🌸Golden Recovery Period\nAfter the initial ", "transcript": "", "brk": "開頭手法: 痛點直擊\n結構: 提出修復期痛點 → 提供專業解決方案與DIY配方 → 限時優惠與留言引導\n為什麼火: 提供具體可執行的DIY面膜配方與豐富滿額贈品，吸引讀者收藏與留言互動\n改編角度: 借用「覺察痛點-給出解方-限時優惠」結構，推廣轉念心態課程或銷售覺察工具包", "my": "你想你將來的生活係點樣？你想成為一個點樣嘅人？\n\n忙了一整天回到家，面對鏡子卸妝的時候，你有沒有發現自己的面容看起來比實際年齡累，皮膚也因為壓力和疲憊而失去了光彩？\n\n照顧好身體，是找回內在力量的第一步。\n\n今天晚上，花三分鐘給自己做一個簡單的放鬆練習。洗完臉後，坐在鏡子前，閉上眼睛深呼吸三次，把一整天累積在肩膀和眉頭的緊繃感慢慢呼出去，讓呼吸帶領你的念頭靜落嚟。\n\n然後，用溫和的乳液或基礎油在手心搓熱，輕輕按摩臉部和頸部，感受手掌的溫度與精油的天然香氣。這不是為了追求外在的完美，而是給自己一個全然陪伴的時刻。\n\n你可以嘗試今天晚上就花三分鐘這樣做，感受呼吸變深、身體慢慢放鬆下來的狀態。\n\n你今天晚上願意給自己三分鐘的安靜陪伴嗎？留言跟我分享你的體會。\n\n生活覺察 轉念 內在力量", "tags": "doTERRAhk, 永久花精油, Helichrysum, 醫美後護理, 限時優惠", "bait": true, "type": "Post", "likes": 51, "views": 0, "shares": 8, "comments": 8, "er": 0.45, "followers": 14895, "date": "2026-09-29", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid04SxfACYQsj5Zz7U47SejdbkDwLZQrXESzmXf7Z78vTGo6ietA4r5VgLdiCcFNZydl", "video": false, "ratio": 0, "score": 0.77, "status": "未处理", "x": 2.1}, {"id": "fb_1581836543956701", "tracker": "Mary Ku 專頁", "competitor": "MindfulnessHK", "caption": "放下，讓自己重獲自由 \nLetting Go, Finding Freedom Again\n\n靜觀減壓課程（MBSR）的創辦人喬．卡巴金（Jon Kabat-Zinn）曾分享一個傳統故事，講述印度人如何捕捉猴子。\n\n人們會把一隻香蕉放進一個挖空、並開了一個小洞的椰子裡。猴子把手伸進去，緊緊抓住香蕉，卻因為拳頭太大而無法把手抽出來。據說，大部分猴子即使被困住，也不願意放開手中的香蕉。其實，困住牠的不是椰子，而是牠不願意放手。\n\n在靜觀修習中，「放下」（letting go）是我們希望培養的七種重要態度之一。它不是否定感受，也不是假裝事情並不重要；而是學習看見自己的心何時正在抓緊、何時又在抗拒。例如執着某些念頭、期望、擔憂、自我批判，不斷問為什麼或一些沒有答案的問題，或者用力想推開我們不喜歡的經驗。這些抓緊與抗拒，往往困住我們，成為痛苦的來源。\n\n當我們願意把緊抓的手鬆開一點，便可能為自己騰出一點空間，看見更多選擇，並以較清晰的心回應當下。\n\n有時候，放下也可以是學習「讓它如是」（letting be）：看見並容許此刻的經驗存在，不急著改變、控制或推開它。這樣，也許已經能讓我們重新感受到一點自由。\n\n對我們來說，緊抓與執著往往比較熟悉，也比較容易；而放下，就像培養任何新的習慣一樣，需要一次又一次的練習。\n\n可以問問自己：\n此刻，有甚麼是我正在緊緊抓住的？\n有沒有一點可能，讓自己放下它，或只是讓它如是？\n\n#靜觀  #mindfulness #MBSR #LettingGo  #JonKabatZinn #samanthayung", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 引子故事 → 概念闡述 → 引導反思\n為什麼火: 內容具備深度啟發性，結合經典故事與實用靜觀練習，引起讀者對心靈自由的共鳴\n改編角度: 借用「動物寓言/比喻引出核心痛點」結構，探討銷售心態中「放開對業績的過度執著」", "my": "你想你將來的生活係點樣？你想成為一個點樣嘅人？\n\n忙碌了一整天，回到家裡，心裡還是不停想著白天沒有處理好的客戶問題，或者心煩著下個月的業績目標。我們就像緊緊握著拳頭不放一樣，把擔憂和壓力牢牢抓在手心裡。\n\n大衛·霍金斯在《放下的力量》提到，當我們願意把緊抓的手鬆開一點，內在空間自然會清明起來。\n\n今天試著做一個簡單的小練習，花兩分鐘閉上眼睛，把注意力放在呼吸上，留意自己此刻有沒有正在緊緊抓著甚麼念頭不放，然後輕輕地對自己說一句，讓它如是。\n\n可以試著每天給自己一點時間練習，慢慢感受內在力量的流動。你今天有沒有甚麼想要放下的體會？歡迎留言分享。\n\n#生活覺察 #轉念 #內在力量", "tags": "靜觀, mindfulness, MBSR, LettingGo, JonKabatZinn, samanthayung", "bait": false, "type": "Post", "likes": 16, "views": 0, "shares": 1, "comments": 0, "er": 0.62, "followers": 2730, "date": "2026-09-25", "url": "https://www.facebook.com/MindfulnessHK/posts/pfbid0i743sMVBLWTBs5mJR2FeBpoE5zmCtq55ACiBU5xerNQ8jUe93J6j87E3vQFXoVtVl", "video": false, "ratio": 0, "score": 0.77, "status": "未处理", "x": 0}, {"id": "fb_1526146746198924", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "🍂為生活增添秋日儀式感・用木香沉靜身心✨\n\n秋天，係一個適合慢落嚟、好好照顧自己嘅季節。就算天氣未有顯著涼意，只要喺屋企點起深沉踏實嘅木質香氣，就能即刻為空間換上專屬秋天嘅沉靜同舒泰感。\n\n今個月嘅每月一物 —— 雪松精油 (Cedarwood)，散發住源自大自然嘅溫柔木香，能幫你穩定情緒、安撫心神，喺繁忙嘅生活裏面搵返內心嘅平靜。仲可以靈活搭配唔同擴香配方，打造專屬秋日氛圍：   \n\n✨清新空間：雪松 + 茶樹 + 野橘 (為家居注入淨化木香)\n😌舒緩放鬆：雪松 + 薰衣草 + 乳香 (沉靜身心，打造睡前儀式感)\n🍊柑橘美夢：雪松 + 尤加利 + 野橘 + 乳香 (甜美放鬆，迎接香甜夢鄉)\n\n⏰最後 3 天！優惠倒數中⏳\n凡於10月15日或之前，單筆忠誠顧客獎勵計劃 (LRP) 訂單滿 125PV，即可免費獲贈雪松精油 15mL一瓶！想免費拎到手就一定要把握呢 3 日啦！ \n\n👉時間無多，立即行動！ 快啲登入EVO線上平台下單啦！\n\nCedarwood 雪松🪵 https://bit.ly/3Wm5cQ0\nEVO Online Office 線上平台🛒 https://bit.ly/49DRp0i\nLatest News 最新消息👀 https://bit.ly/4e09dU1\n\n🍂𝐀𝐝𝐝 𝐀𝐮𝐭𝐮𝐦𝐧 𝐑𝐢𝐭𝐮𝐚𝐥𝐬 𝐭𝐨 𝐋𝐢𝐟𝐞・𝐒𝐨𝐨𝐭𝐡𝐞 𝐘𝐨𝐮𝐫 𝐌𝐢𝐧𝐝 & 𝐁𝐨𝐝𝐲 𝐰𝐢𝐭𝐡 𝐄𝐚𝐫𝐭𝐡𝐲 𝐖𝐨𝐨𝐝✨\n\nAutumn is the perfect season to slow down and practice self-care. Even if the weather isn't chilly yet, diffusing a deep, grounding woody aroma instantly transforms your space into a serene, cozy autumn sanctuary.\n\nOur Product of the Month, Cedarwood Essential Oil, carries a gentle, earthy scent straight from nature. It helps ground your emotions and calm your mind, bringing i", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 季節氛圍營造 → 產品特性與配方教學 → 限時優惠促購\n為什麼火: 提供具體可執行的擴香配方，吸引粉絲收藏與轉發實用資訊\n改編角度: 結合秋日節氣與轉念練習，教讀者用三個步驟清理內心雜念並引導領取心靈療癒指南", "my": "你想你現在過的生活，是不是你心裡真正想要的樣子？\n\n秋天，是一個很適合慢下來、好好照顧自己的季節。每天忙著處理工作和業績，就算周圍的環境沒有太大的變化，只要給自己留出短短的一刻，把紛亂的念頭靜落來，就能為內心換上一份沉靜與舒泰。\n\n我自己的日常習慣，是在桌上點一杯大師咖啡，或者用一點木質的香氣陪伴自己。這不是為了改變什麼，而是一個讓自己重新找回內在力量的溫柔方式，幫助我們在繁忙的生活裡慢慢理清方向。\n\n今天想分享的小練習很简单：\n\n今天抽出一分鐘，閉上眼睛，覺察自己的呼吸。\n不需要刻意去改變它，只是單純地感受空氣進出。\n當念頭飄走時，輕輕把它拉回來，感受那份通暢。\n\n背後的東西可以逐步了解，不用急著給自己壓力。\n\n今天不妨試著花一分鐘做這個小練習，如果你願意，也可以在下面留言分享你的體會。\n\n生活覺察 轉念 內在力量", "tags": "doTERRAhk, 雪松, 每月一物, 秋季, DiffuserBlend", "bait": false, "type": "Post", "likes": 64, "views": 0, "shares": 7, "comments": 0, "er": 0.48, "followers": 14895, "date": "2026-10-13", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid02HXyCBX3ucNExpauFK8d3AKWcftNAW8XwsGgUzB7guVoHUqH8ct77NZNPXQpRYNejl", "video": false, "ratio": 0, "score": 0.66, "status": "未处理", "x": 1.8}, {"id": "fb_1583520137149332", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【寧夏紅高級體驗套裝快閃優惠⚡新朋友專享！ 】\n\n寧夏紅被譽為守護健康嘅第一道防線，由眼部保養、日常活力到腸道健康都有幫助💪，咁多好處，當然要同更多朋友分享！\n\n由今日6pm起至10月31日，新品牌夥伴以寧夏紅高級體驗套裝加入Young Living 即可享限時 9折優惠😍 把握機會，一齊體驗寧夏紅嘅魅力，開啟健康生活每一天❤️！\n\n條款及細則：\n- 優惠期由2026年10月24日下午6時起至2026年10月31日晚上11時59分止\n- 適用於香港及澳門巿場。\n- 適用於虛擬辦公室及體驗中心新品牌夥伴入會\n- 不適用於現有品牌夥伴或重新激活帳戶\n- 不適用於新會員入會優惠券\n- 如有任何爭議，Young Living將保留最終決定權\n\n---\n【  Exclusive Offer for New Friends!  ⚡Join us with NingXia Red】\n\nWidely regarded as the first line of defense for your health, NingXia Red supports us from eye health and daily vitality to digestive wellness 💪 With so many benefits, it is something worth sharing with more people!\n\n⏰ From 6:00 PM today until October 31, new Brand Partners who enroll with the Premium Experience Kit with NingXia Red can enjoy an exclusive 10% OFF discount 😍\n\nDon't miss this chance to experience the benefits of NingXia Red and start your journey toward a healthier, more vibrant lifestyle every day! ❤️\n\nTerms and Conditions:\n- Promotion is valid from 6:00PM, Oct 24 to 11:59PM, Oct 31, 20", "transcript": "", "brk": "開頭手法: 痛點直擊\n結構: 優惠預告 → 產品價值 → 參與細則\n為什麼火: 分享數達54次顯示限時新會員優惠具高度轉發價值\n改編角度: 推出生活覺察課程早鳥優惠，吸引新讀者轉發參與", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n忙了一整天回到家，腦裡還在轉著明天要見的客戶和業績數字，身體的疲累其實一直都在。\n\n照顧身體的提醒：每天給自己兩三分鐘，慢慢喝一杯溫水，留意當下的呼吸，讓念頭靜落嚟。\n\n今天就試試花三分鐘，放下手機，純粹感受呼吸的進出，不需要做到最好，只是陪伴自己。\n\n你可以有體驗再去選擇，背後的東西可以逐步了解。\n\n生活覺察 轉念 內在力量", "tags": "", "bait": false, "type": "Post", "likes": 90, "views": 0, "shares": 54, "comments": 1, "er": 0.26, "followers": 56096, "date": "2026-10-24", "url": "https://www.facebook.com/YoungLivingHongKong/posts/pfbid0trXvJPGXQGhtcUnazWMYUrdW4bnBK72duv2ryWkhcDihHateyuKmgSDhkJvXcksFl", "video": false, "ratio": 0, "score": 0.65, "status": "未处理", "x": 1.7}, {"id": "fb_1591141719720507", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【Let It Glow ✨！揭開Holiday Catalog限定驚喜】\n\nYL 節日小精靈🧝🏻‍♀️已經為大家準備好一系列全新產品及精選套裝，更有多款平日喺港澳區未有發售的限定產品，與您一同點亮聖誕🎄，讓愛與關心傳遞給身邊每一位摯愛❤️。\n\n⏰ 11月2日正午12點，忠誠獎勵訂單率先開售；隨後於 11月3日正午12點開放標準訂單購買。\n\n節日限定，售完即止！ 立即預覽您的聖誕專屬套裝，一齊 Let It Glow，讓今個佳節綻放溫暖光芒！✨\n\n條款及細則：\n\n- 忠誠獎勵訂單優惠期由2026年11月2日中午12時優先開始，標準訂單的優惠期由2026年11月3日中午12時開始，至2026年12月31日晚上11時59分止。\n\n- 只適用於香港及澳門巿場。\n\n- 適用於虛擬辦公室網上訂單、電話、電郵及體驗中心下單（每次最多處理5張訂單）。\n\n- 不適用於忠誠獎勵積分換領訂單。\n\n- 使用八達通、支付寶香港、Wechat Pay HK或PayMe支付的訂單，退款將會退至會員之YL電子錢包，詳情請參閱退款政策。\n\n- 八達通、支付寶香港、Wechat Pay HK及PayMe只適用於體驗中心。\n\n- 數量有限，售完即止。\n\n- 優惠產品不設退貨及換貨。\n\n- 如有任何爭議，Young Living將保留最終決定權。\n\n---\n\n【Let It Glow! Unwrap This Season's Exclusives】\n\nYL’s holiday elves🧝🏻‍♀️ have prepared an exciting collection of new products and specially curated gift sets, including a variety of exclusive items that are rarely seen in Hong Kong and Macau!  Let’s light up Christmas🎄 together and spread love and care to every loved one around you. ❤️\n\nEarly bird available at Loyalty Rewards Order ONLY from November 2 at 12PM for 24 hours. Qui", "transcript": "", "brk": "開頭手法: 節慶氛圍與獨家驚喜的日常場景與活動邀請\n結構: 節慶新品預告 → 開賣時間與規則 → 行動呼籲與條款\n為什麼火: 分享數達28次，顯示限量限定與優先購買資訊吸引粉絲轉發\n改編角度: 借用新品或限時活動的稀缺性結構，推廣生活覺察轉念工作坊或銷售心態限時名額", "my": "你想你將來的生活係點樣？你想成為一個點樣的人？\n\n面對工作和業績的壓力，我們常常把心力全部放在外面，卻忽略了內在其實需要一個安靜的空間來整理自己。\n\n今天想分享的一個概念來自埃克哈特托勒的《當下的力量》。當外在環境越是忙亂，我們越需要把注意力拉回到此時此刻的呼吸上。\n\n今天就做一個三分鐘的小練習。找一個安靜的角落坐下來，把手輕輕放在胸口，閉上眼睛，慢慢地吸氣，感覺氣息流經全身，再慢慢地把氣吐掉。當紛亂的念頭浮現時，只是看著它，然後輕輕把注意力帶回呼吸。\n\n可以每天給自己三分鐘時間練習，慢慢找回內在的力量與清明。\n\n你今天也有好好照顧自己的呼吸嗎？歡迎留言分享你的體會。\n\n生活覺察\n轉念", "tags": "YLHK, HolidayCatalog, HolidayCatalog2025, LetItGlow", "bait": false, "type": "Post", "likes": 129, "views": 0, "shares": 28, "comments": 2, "er": 0.28, "followers": 56096, "date": "2026-10-31", "url": "https://www.facebook.com/YoungLivingHongKong/posts/pfbid02YbegcrvvZqrXZg3eZFfZoGJvLkBFeYw9FnpfS5pSnwjHJhsfWXYMFd5uHZ5GUcNjl", "video": false, "ratio": 0, "score": 0.49, "status": "未处理", "x": 1.3}, {"id": "fb_1124988503786652", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "今個 Holiday Catalog 登場嘅 #HighlandFlats森林套裝，除左包含 4 支源自 Highland Flats 農場嘅精油，更承載住一段我哋創辦人Gary 同呢個農場嘅故事📖。\n\n今次我哋特別邀請到曾多次親身到訪 Highland Flats 農場嘅皇家皇冠鑽石級領袖 Joanne，同大家分享佢嘅體驗，及點樣透過簡單嘅儀式，將森林嘅寧靜與力量融入日常生活之中😮‍💨。\n\n如果您都已經收到Highland Flats森林套裝，不妨到時候一齊同步使用，洗滌心靈，喚醒身體深處嘅潛能與能量💚！", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 宣傳新品 → 邀請領袖分享 → 號召同步體驗\n為什麼火: 留言數高於讚好，顯示創辦人故事與領袖分享成功引發粉絲互動\n改編角度: 結合產品新登場與創辦人初心，引導讀者透過日常小儀式轉念並提升銷售心態", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n每日朝早返到公司面對排山倒海嘅工作同銷售目標，個腦轉個不停，好容易忽略咗自己真正嘅狀態。\n\n我想同你分享《當下的力量》入面提到的一個概念，當我們把注意力放返喺呼吸上面，個念頭就會慢慢靜落嚟。\n\n今天你可以試一個簡單的小練習，花三分鐘坐在位子上，閉上眼睛，感受空氣進出鼻腔，把心神帶回當下。\n\n你可以慢慢感受呢種內在的安靜，這只是一個日常的陪伴，沒有任何壓力。\n\n你可以試試看這個練習，或者在下面留言分享你今天的體會。\n\n#生活覺察 #轉念 #內在力量", "tags": "HighlandFlats森林套裝", "bait": false, "type": "Video", "likes": 64, "views": 4327, "shares": 8, "comments": 49, "er": 0.22, "followers": 56096, "date": "2026-11-06", "url": "https://www.facebook.com/YoungLivingHongKong/videos/1124988503786652/", "video": true, "ratio": 0, "score": 0.45, "status": "未处理", "x": 1.2}, {"id": "fb_1603409255160420", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【🌈經典人氣產品即將限時回歸！】\n\n趁住雙11，同大家分享一個好消息✨有一款深受大家喜愛嘅產品，即將快閃回歸！\n\n我哋準備咗4個提示，睇下您估唔估到😏\n\n留言分享您嘅猜測，答案即將揭曉！\n---\n【🌈 A Classic Fan-Favorite Product is Making a Limited-Time Comeback!】\n\nWe have some exciting news to share this Double 11✨! A beloved product is coming back for a limited time!\n\nWe've prepared 4 clues. Can you guess what it is😏? \n\nLeave your guess in the comments! The answer will be revealed soon.\n\n#YoungLiving #YLHK #Double11 #FlashSale", "transcript": "", "brk": "開頭手法: 期待感引導，用限時回歸與雙11熱話吸引注意\n結構: 預告好消息 → 給予提示引導猜測 → 呼籲留言互動\n為什麼火: 留言數高達60，有效利用互動機制提升參與度\n改編角度: 轉念心態專頁可改用限時覺察練習或轉念挑戰引導留言互動", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n每天忙著應付客戶和業績，你有多久沒有安靜聽聽自己的聲音？\n\n在《當下的力量》這本書裡，我體會到當念頭靜落嚟，清明自然會出現。\n\n今天試著做一個簡單的小練習，花三分鐘閉上眼睛，把注意力放在自己的呼吸上，不急著去想待辦事項。\n\n你可以帶著這個覺知去感受當下，背後的東西可以逐步了解。\n\n今天不妨留幾分鐘給自己，留言分享一下你此刻心裡的感覺。\n\n生活覺察 轉念 內在力量", "tags": "YoungLiving, YLHK, Double11, FlashSale", "bait": true, "type": "Video", "likes": 74, "views": 4582, "shares": 0, "comments": 60, "er": 0.24, "followers": 56096, "date": "2026-11-11", "url": "https://www.facebook.com/reel/1067478106319961/", "video": true, "ratio": 0, "score": 0.45, "status": "未处理", "x": 1.2}, {"id": "fb_1554992616647670", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "植物的無聲對話，藏著大自然最深層的療癒力量🌹\n\n科學研究發現，玫瑰在面對環境轉變時，會透過釋放獨特的芳香分子與周遭進行巧妙的「植物溝通」🌿。有趣的是，根據南部中國研究人員的最新發現，這種自然通訊甚至能跨物種惠及周遭植物——當研究人員將玫瑰種植在煙草田中進行對照測試時，驚奇地發現靠近玫瑰的煙草植物，其分子防禦機制顯著提升！🆙\n\n這種歷經歲月演化的「自然智慧」，不僅是植物守護自我的生存本能，更轉化為大自然餽贈的珍貴療癒力量🫶🏻\n\ndōTERRA 呵護系列 - 玫瑰🌹將這份大自然的純淨精華完美封存。結合分餾椰子油的溫和質地，輕輕一抹，不僅能深層滋養肌膚、喚醒好氣色，配合舒緩的 1-4-2 呼吸法👃🏻 (雙手罩住口鼻、吸氣 1 秒、憋氣 4 秒、呼氣 2 秒，維持呼氣長於吸氣），更能隨時隨地與自己的內心展開溫柔對話，讓身心瞬間回歸平衡⚖️\n\n✨本月限定：呵護系列 - 玫瑰可享有10% off優惠\n把握機會，將這份純淨寵愛帶回家，開啟屬於您的芳香療癒儀式。立即登入EVO線上辦公室，或親臨精油體驗館選購！🛒\n\nRose Touch 呵護系列 - 玫瑰🌹 https://bit.ly/4AhGN1i\nEVO Online Office 線上平台🛒 https://bit.ly/49DRp0i\nLatest News 最新消息👀 https://bit.ly/4e09dU1\n\n𝐓𝐡𝐞 𝐬𝐢𝐥𝐞𝐧𝐭 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐜𝐚𝐭𝐢𝐨𝐧 𝐨𝐟 𝐩𝐥𝐚𝐧𝐭𝐬 𝐡𝐨𝐥𝐝𝐬 𝐧𝐚𝐭𝐮𝐫𝐞'𝐬 𝐝𝐞𝐞𝐩𝐞𝐬𝐭 𝐡𝐞𝐚𝐥𝐢𝐧𝐠 𝐩𝐨𝐰𝐞𝐫🌹\n\nScientific research reveals that roses interact with their surroundings through a subtle form of \"plant communication,\" releasing unique aromatic molecules to adapt to environmental changes🌿. Remarkably, recent findings by researchers in southern China show that this natural communication can even benefit neighboring plants across dif", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 導入植物科學現象 → 連結大自然療癒力量 → 帶出產品與呼吸法 → 宣傳優惠與購買連結\n為什麼火: 分享數佔比較高，代表植物跨物種溝通的科學冷知識具備高轉發價值\n改編角度: 借用「大自然奧秘對應內在覺察」結構，將植物防禦機制轉化為心態轉念的科學依據", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n面對工作同家庭嘅雙重壓力，有時我哋嘅內在力量好容易被消耗，甚至唔知道自己每日忙緊咩。\n\n正如我在《當下的力量》入面體會到嘅，當念頭靜落嚟，清明嘅感覺就會慢慢浮現。\n\n今天試一個好簡單的小練習，花一到三分鐘，將注意力放喺呼吸上面，慢慢吸氣，然後慢慢呼氣，感受空氣進出。\n\n背後嘅東西可以逐步了解，先用呼吸陪伴自己，找回內在力量。\n\n你可以試試這個練習，然後留言分享你嘅體會。\n\n生活覺察\n轉念\n內在力量", "tags": "doTERRAhk, RoseTouch, 自然智慧, 植物的無聲對話, 花中之后", "bait": false, "type": "Post", "likes": 22, "views": 0, "shares": 8, "comments": 1, "er": 0.21, "followers": 14895, "date": "2026-11-10", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid02JcezUcdSf342xSbD85XuK5cPaBZMifTo483iAL7wAEihbKwB6oUTNqapf3ietthZl", "video": false, "ratio": 0, "score": 0.44, "status": "未处理", "x": 1.2}, {"id": "fb_1540988124714786", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "【打造「桂婦」氣場 ✨15個精緻身心保養方案】\n何謂「桂婦」？不只是使用桂花精油，更是將生活過得精緻、從容，懂得隨時療癒自己的優雅女性。\n\n從提升貴人運、營造好人緣磁場，到美肌護膚與睡前放鬆，我們為你整理了15個日常香氣儀式！向左滑動解鎖完整指南，隨時為自己安排一場奢華的身心保養吧！🥰\n\n以上15個「桂婦」保養法，哪一個最令妳心動？\n記得【收藏這篇貼文】，隨時拿出來參考！也歡迎在下方【留言分享】妳最想嘗試那樣？  \n\n想免費把珍貴的桂花精油帶回家？\n即日起至 2026年11月30日，健康倡導者於活動期間成功介紹新人成為會員並達到指定介紹人數要求，即有機會免費獲贈木蘭花、忍冬花或桂花精油！🌻\n\n快點與身邊的朋友分享這份精緻的植物香氣，一起養成優雅「桂婦」氣場！💃🏻\n\n活動詳情: https://bit.ly/4rQ6D9y\n最新消息: https://bit.ly/4e09dU1\n\n【Cultivate Your “Osmanthus Lady” Aura ✨ 15 Elegant Everyday Self-Care Rituals】\nWhat is an “Osmanthus Lady”? It is not just about using Osmanthus essential oil, but living life with grace, ease, and mindfulness—an elegant woman who knows how to pamper and heal herself anytime.\n\nFrom attracting mentors and enhancing your personal charm, to glowing skincare and nighttime relaxation, we have curated 15 daily aromatic rituals for you! Swipe left to unlock the full guide and treat yourself to a luxurious self-care experience whenever you need it! 🥰\n\nAmong these 15 “Osmanthus Lady” rituals, which one cap", "transcript": "", "brk": "開頭手法: 諧音梗與身份共鳴\n結構: 定義概念 → 羅列清單 → 互動引導 → 活動推廣\n為什麼火: 善用收藏引導與豐富的清單內容帶動分享\n改編角度: 結合生活覺察設計一套日常轉念心法清單並鼓勵收藏", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n每天在工作和家庭之間轉身，回到家裡的時候，心裡是不是還在想著剛才沒有處理好的事情？\n\n在《當下的力量》這本書裡提到，當我們的念頭一直抓著過去或未來不放，心就很難真正安靜下來。\n\n其實，照顧自己不需要很複雜的儀式。\n\n試試在晚上洗完澡之後，花兩三分鐘坐在椅子上，輕輕閉上眼睛，感受自己的呼吸慢慢變深，把今天的疲憊暫時放在一旁。\n\n這是一個可以隨時開始的小練習，陪著自己把念頭靜落嚟。\n\n今天晚上，你願意給自己幾分鐘的安靜時間嗎？歡迎留言分享你的體會。\n\n生活覺察\n轉念", "tags": "doTERRAhk, 桂花精油, 桂婦養成記, 精油保養, 新人推薦禮遇", "bait": true, "type": "Post", "likes": 39, "views": 0, "shares": 5, "comments": 0, "er": 0.3, "followers": 14895, "date": "2026-10-28", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid02Vho3FMuKfS2ix35PkdHBM6HaDunwzdvQ7efLWzjLKWCSyjAHkc4EZUFxv8zqVDWQl", "video": false, "ratio": 0, "score": 0.43, "status": "未处理", "x": 1.2}, {"id": "fb_1585688080265871", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【全新瓶塞升級登場✨ 完美保存每一滴純淨精油】\n\nYoung Living 精油正陸續換上全新升級的精油瓶塞，希望更妥善地保存每滴珍貴精油。特別加入瓶蓋保鮮膜，有助提升密封效果，減少精油揮發，讓您安心享受純淨優質嘅精油體驗。🌿\n\n—-\n【New Dropper✨ Lock in every precious drop for you】\n\nYoung Living essential oils are gradually transitioning to an upgraded dropper design to help preserve every precious drop more effectively. The new dropper features a foil liner seal that enhances the sealing performance and helps reduce essential oil evaporation,  allowing you continue to enjoy a pure, premium essential oil experience. 🌿​‌\n\n#YLHK #YoungLiving #EssentialOil  #全新精油瓶塞 #NewUpgrade", "transcript": "", "brk": "開頭手法: 宣佈產品升級的日常場景\n結構: 宣佈新設計 → 解釋功能與好處 → 中英對照說明\n為什麼火: 分享數達22相對讚好偏高，顯示產品升級資訊具備實用性而吸引轉發\n改編角度: 可借用「細節升級」結構，分享覺察練習或銷售心態的小工具優化過程", "my": "你想你每天面對客戶和業績的時候，心裡是不是常常有一種說不出的緊繃？\n\n在《當下的力量》裡提到，當我們的念頭總是抓著未來不放，當下就只剩下疲憊。\n\n今天試著做一個簡單的小練習。\n泡一杯溫熱的咖啡，坐在椅子上，什麼都不要想，只是把注意力放在手掌感受到的溫度上，慢慢地吸氣，再慢慢地吐氣。\n讓呼吸帶著念頭靜落下來，陪自己找回一點內在力量。\n\n可以花三分鐘試試看，然後留言分享你此刻的體會。\n\n#生活覺察 #轉念", "tags": "YLHK, YoungLiving, EssentialOil, 全新精油瓶塞, NewUpgrade", "bait": false, "type": "Post", "likes": 109, "views": 0, "shares": 22, "comments": 0, "er": 0.23, "followers": 56096, "date": "2026-10-26", "url": "https://www.facebook.com/YoungLivingHongKong/posts/pfbid09XwGgNSaZZjSoz1TkAgn3sWQfAB1BA9aP1c1HrfZeYgHkFx2VJ6tdR9UHoLvL9iWl", "video": false, "ratio": 0, "score": 0.39, "status": "未处理", "x": 1.0}, {"id": "fb_1527276839419248", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "【🍁10月US NFR 新品登場！解鎖植萃力量 】\n踏入涼爽秋季，是時候為生活與肌膚注入滿滿的自然療癒感！10 月USNFR帶來多款精彩新品與熱門回歸，全面照顧您與家人的健康需求✨\n\n🎁10月限定200PV滿額禮USNFR\n10月期間，凡單一訂單滿200PV，即可免費獲得佛手柑 (15 mL) 及 森林浴精油 (15 mL) 各一支！（每個帳戶限 4 件）\n\n新品亮點：\n✨花漾年華複方精油 (10 mL)   \n經典美肌配方全新升級！融入荷荷巴油、猴麵包樹油及白池花籽油，只需一滴，即可圓滿護膚儀式，完美提升您的IKISE™護膚體驗。\n\n🧠全神貫注複方系列 (InTune)   \n精選 13 種 CPTG® 精油調配，專為清晰思緒而設！除了 15 mL 擴香精油，更有全新隨身香膏 (含羅漢柏木），隨時隨地凝神專注。\n\n🛡️保衛複方香膏 (含紫錐菊)\n口袋裡的日常防護！經典保衛複方揉合紫錐菊精油，便攜棒狀設計不沾手、免稀釋，陪伴您安心出行。\n\n🌿檀香苦檻蘭精油 (Naio 5 mL)\n珍稀夏威夷純萃！富含 α-紅沒藥醇，溫和舒緩調理，維持肌膚健康光采。\n\n🎒doTERRA方便攜擴香棒 (限時優惠) \n無須加水或插電！備有全神貫注、順暢呼吸及保衛複方，讓芳香體驗隨身同行。\n\n還有 針對性解決方案套組、Nature's Rx 家庭精選套裝、熱門回歸的沙龍級洗護套裝與沉穩舒心的靜謐森林複方精油！ 限時發售產品數量有限，售完即止，立即登入EVO線上平台搶購啦😉\n\nEVO Online Office 線上平台🛒 https://bit.ly/49DRp0i\nLatest News 最新消息👀 https://bit.ly/4e09dU1\n\n💬 你想最先體驗哪一款新品？歡迎在下方留言分享🫶🏻\n\n【🍁What’s New in October US NFR! Unlock the Power of Nature 】\n\nAs autumn arrives, it’s time to infuse your life and skin with natural wellness! The October US NFR launch brings an array of exciting new products and returning favorites to support you", "transcript": "", "brk": "開頭手法: 季節場景與新品預告，直接帶出秋季療癒與會員期待感\n結構: 季節問候 → 滿額贈禮 → 新品亮點清單 → 導購連結與互動提問\n為什麼火: 憑藉限時新品與滿額贈禮的實質優惠，吸引精油用家關注與搶購\n改編角度: 可將新品上市結構轉化為「覺察工具升級」，列出轉念好物與限時領取方式", "my": "你想你在工作與生活之間，是不是常常覺得被各種瑣事佔滿，很難好好靜下來？\n\n忙碌的日子裡，我們常常把精神全放在處理眼前的事情，卻忽略了其實可以給自己一點空間，讓內在力量慢慢浮現。\n\n埃克哈特·托勒在《當下的力量》裡提到，當我們把注意力放回呼吸和當下，心裡的紛擾就會漸漸平息。\n\n今天試著做一個簡單的小練習：在接下來的日常裡，花一到兩分鐘閉上眼睛，感受自己的呼吸一進一出，什麼都不用去想，單純覺知這個當下。\n\n可以試著在日常裡抽空練習一下，你今天有什麼樣的體會嗎？\n\n生活覺察\n轉念", "tags": "doTERRAhk, CPTG, USNFR新品, 精油生活, 200PV", "bait": true, "type": "Post", "likes": 35, "views": 0, "shares": 4, "comments": 0, "er": 0.26, "followers": 14895, "date": "2026-10-14", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid02SJLq8wLoAsyF96xGB4gRTYzQg3hF1ugfuSvh6b4LHLANkU7LjHW5v9aT1FPivm7Vl", "video": false, "ratio": 0, "score": 0.37, "status": "未处理", "x": 1.0}, {"id": "fb_1535774838569448", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "【每瓶精油背後，都凝結著一份對世界的愛與承諾 💧✨】\n\n當您打開手中那瓶dōTERRA精油，感受純淨香氣帶來的療癒時，這份力量早已跨越萬里，在世界的另一端綻放力量🌿\n\n2025 年，我們與全球夥伴繼續攜手前行，在精油瓶的兩端創造改變：\n以「互相效力合作計劃 (Co-Impact Sourcing)」保障當地種植者與農民的生計、透過療癒手手基金會 (Healing Hands) 進行社區投資與慈善捐款，同時嚴格實行 CPTG® 專業純正檢測品質認證，並以實際行動守護大自然與地球環境 🌏🌱\n\n每一個數字，都是一個關於希望與改變的故事。\n感謝每一位與我們同行、將這份純淨與愛傳遞出去的您💚\n\n一起回顧我們在 2025 年共同實現的影響力！🥰\nhttps://bit.ly/2025_doterra_impact_report\n\nEVO Online Office 線上平台🛒 https://bit.ly/49DRp0i\nLatest News 最新消息👀 https://bit.ly/4e09dU1\n\n𝐁𝐞𝐡𝐢𝐧𝐝 𝐞𝐯𝐞𝐫𝐲 𝐛𝐨𝐭𝐭𝐥𝐞 𝐥𝐢𝐞𝐬 𝐚 𝐜𝐨𝐦𝐦𝐢𝐭𝐦𝐞𝐧𝐭 𝐨𝐟 𝐥𝐨𝐯𝐞 𝐭𝐨 𝐭𝐡𝐞 𝐰𝐨𝐫𝐥𝐝💧✨\nWhen you open your bottle of dōTERRA essential oils and feel the healing comfort of pure aroma, that strength is already reaching far across the globe, bringing positive change to the other side of the world. 🌿\n\nIn 2025, we continued to move forward hand in hand with our global partners, creating impact on both sides of the bottle:\nSupporting the livelihoods of local growers and farmers through Co-Impact Sourcing®, giving back through community investments and charitable donations ", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 情感連結 → 使命價值 → 行動呼籲\n為什麼火: 善用雙語排版與年度回顧連結，帶動讀者點擊報告分享\n改編角度: 將品牌公益報告結構轉化為個人轉念成長的年度覺察總結與行動邀請", "my": "你想你將來的生活係點樣？你想成為一個點樣的人？\n\n面對忙碌的工作和家庭壓力的同時，我們常常會把注意力全部放在外在的目標上，卻忘記了照顧自己的內在感受。\n\n正如我在日常靜心時體會到的，當我們懂得把腳步放慢，把外面的聲音稍微隔絕，內在力量就會慢慢浮現出來。\n\n今天試着給自己兩三分鐘的時間，把手頭的事情放下，單純地覺察自己的呼吸，讓念頭慢慢靜落嚟。\n\n可以嘗試每天花一點時間做這個小練習，觀察自己當下的狀態。\n\n生活覺察 轉念 內在力量", "tags": "doTERRAhk, CoImpactSourcing, 互相效力合作計劃, 瓶子的兩端, CPTG", "bait": false, "type": "Post", "likes": 29, "views": 0, "shares": 5, "comments": 0, "er": 0.23, "followers": 14895, "date": "2026-10-23", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid02GgpnV5nE1EXCE6FXGuxGCMPhBxrbDi5YSihpor3GmVqt85gHjRfmfDBQuUx9mgTzl", "video": false, "ratio": 0, "score": 0.36, "status": "未处理", "x": 1.0}, {"id": "fb_1591366829697996", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【🎁11月PV獎賞 — Gratitude in Every Drop💐】\n\n來到充滿感恩嘅月份，感謝一路相伴嘅家人朋友之餘，都要好好感謝一直努力前行嘅自己🫶11月PV獎賞精選精油、個人護理同營養補充品，陪您將愛傳遞比身邊每一位。\n\n今個月✨ 450PV✨可獲贈來自厄瓜多爾自家農場，平日港澳區買唔到嘅印加香蜂草精油🌿更有意義嘅係，Young Living將代您捐出訂單金額嘅1%予Young Living基金會，支持當地兒童嘅生活同社區😍您仲會收到一張由Young Living學院學生親手繪製嘅感謝卡，每一張都係獨一無二嘅真跡作品，窩心又極具收藏價值💌\n\n💓忠誠獎勵訂單\n- 125PV早鳥獎賞：北非雪松精油 15ml（只限11月1日至15日）\n- 190PV獎賞：盜賊清香潔亮牙膏 + KidScents 兒童護理潔齒牙膏 + 125PV獎賞\n- 300PV獎賞：Super C + 190PV獎賞\n- 450PV獎賞：印加香蜂草精油 5ml + 300PV獎賞\n\n💓標準訂單\n- 190PV獎賞：盜賊清香潔亮牙膏 + KidScents 兒童護理潔齒牙膏\n- 450PV獎賞：印加香蜂草精油 5ml + 190PV獎賞\n\n🔗分享推廣單張：https://bit.ly/PVFlyer-202611 \n\n條款及細則：\n- 優惠期由2026年11月1日凌晨12時起至2026年11月30日晚上11時59分止（早鳥獎賞除外）。\n- 只適用於香港及澳門巿場。\n- 每張單一訂單只限免費獲贈當月所有PV獎賞各1件。\n- 所有獎賞數量有限，先到先得，送完即止。\n- 部份產品如送罄，Young Living將以相近價值的產品取替。\n- 每張單一訂單必須符合指定PV值要求，方可獲贈相應之獎賞，不接受合併訂單。\n- 每位會員每月只限獲贈最多2份PV獎賞。\n- 優惠不適用於忠誠獎勵積分換領訂單。\n- 產品不設退貨及換貨。\n- 會員有責任承擔所有購買的產品及PV獎賞之運送費用。\n- 如有任何爭議，Young Living將保留最終決定權。\n---\n【🎁November PV Rewards — Gratitude in Every Drop💐】\n\nAs we enter the month of gratitude, let’s thank our family and friends who hav", "transcript": "", "brk": "開頭手法: 節慶主題與身份共鳴，以感恩月份切入感謝自己與同行者。\n結構: 節慶情感鋪墊 → 核心限時回饋與公益亮點 → 階梯式獎賞明細。\n為什麼火: 結合高價值的獨家贈品與捐款公益機制，有效刺激粉絲點讚與分享。\n改編角度: 借用階梯式心態賦能清單，設計「轉念練習」或「銷售突破」的每月限時覺察禮遇。", "my": "你想你將來的生活係點樣？你想成為一個點樣的人？\n\n面對滿月的工作壓力和客戶的追趕，我們常常習慣了把照顧自己的事情放到最後，直到身體開始發出疲憊的訊號。\n\n《當下的力量》提醒我們，生命只在當下發生。\n\n今天花三分鐘做個小練習。坐在椅子上，閉上眼睛，把注意力放回自己的呼吸。吸氣時感受空氣進來，呼氣時慢慢把肩膀的緊繃放下來，讓念頭靜落嚟。\n\n試著在忙碌之中，留一點時間給自己，陪伴自己慢慢放鬆下來。\n\n你今天花左幾多時間同自己對話？歡迎留言分享你的體會。\n\n生活覺察\n轉念\n內在力量", "tags": "", "bait": false, "type": "Video", "likes": 85, "views": 7407, "shares": 12, "comments": 1, "er": 0.17, "followers": 56096, "date": "2026-10-31", "url": "https://www.facebook.com/reel/2666778797092793/", "video": true, "ratio": 0, "score": 0.26, "status": "未处理", "x": 0.7}, {"id": "fb_1584296483738364", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【寧夏紅真實用家分享🍷👀眼睛篇】\n\n係咩令佢哋堅持每日飲用寧夏紅？🎥等真實用家話您知，一同見證驚喜嘅轉變！\n\n寧夏紅選用原粒新鮮寧夏枸杞，含有豐富玉米黃素及葉黃素，有助維持眼睛黃斑部健康，守護您嘅雙眼🤓\n\n👉Mega Sale限定套裝同步發售，優惠價入手寧夏紅同2大人氣營養補充品：\n🩷寧夏紅 x Life 9 | 寧夏新手套裝\n🩷寧夏紅 x Essentialzymes-4 | 腸道活力套裝\n優惠期至10月31日，數量有限，立即行動！\n\n*本影片内容為真實用家經驗分享，實際效果因人而異\n---\n【NingXia Red Testimonials🍷👀About Eye Health】\n\nWhat keeps them drinking NingXia Red every day? 🎥Let real users share their personal experiences with you and discover their surprising transformations!\n\nMade with whole, fresh Ningxia wolfberries, NingXia Red is rich in zeaxanthin and lutein, helping to maintain health of the macula and protect your eyes🤓\n\n👉Mega Sale exclusive bundles are also available! Get NingXia Red and 2 popular nutritional supplements at a special price:\n🩷NingXia Red x Life 9 | NingXia Discovery Set\n🩷NingXia Red x Essentialzymes-4 | Digestive Vitality Set\nOffer valid until October 31. Limited quantities available. Grab it now!\n\n*The content of this video is based on real user experience. Actual effects may vary from perso", "transcript": "", "brk": "開頭手法: 提問\n結構: 提問引言 → 用家見證 → 產品原理 → 促銷轉換\n為什麼火: 分享數達15次，顯示真實用家見證與限時優惠組合能有效驅動轉發\n改編角度: 借用真實見證與限時套裝結構，改寫為生活覺察心態課程的限時報名優惠", "my": "你想你將來的生活係點樣？你想成為一個點樣的人？\n\n面對忙碌的工作和業績壓力，我們常常盯著螢幕太久，忽略了身體給我們的訊號，連眼睛感到疲勞都只是隨手揉一揉繼續拼。\n\n照顧身體不需要太複雜，今天開始，在工作空檔給自己一分鐘。\n\n閉上眼睛，慢慢放鬆眼皮，配合呼吸，讓緊繃的念頭靜落嚟，重新找回內在力量。\n\n可以每天給自己一點安靜的時間，慢慢感受身體的變化。\n\n生活覺察 轉念 內在力量", "tags": "YLHK, Youngliving, NingXiaRed, Testimonial, UserSharing", "bait": false, "type": "Video", "likes": 72, "views": 5323, "shares": 15, "comments": 0, "er": 0.16, "followers": 56096, "date": "2026-10-25", "url": "https://www.facebook.com/reel/1150404664119217/", "video": true, "ratio": 0, "score": 0.26, "status": "未处理", "x": 0.7}, {"id": "fb_1511522427661356", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "⏳【夏末秋初超值優惠🍂最後倒數！8折優惠只到 9 月 30 日】⏳\n\n轉季時節身體最容易疲倦、抵抗力下降！想維持最佳狀態，基礎營養絕對不能缺席！💡\n\ndōTERRA Microplex VMz® 全方位綜合維生素 專為經常外賣及飲食不均衡的都市人而設，提供 22 種全方位必需維生素與礦物質。採用專利醣蛋白基質 (Glycoprotein Matrix），將營養素結合於酵母蛋白質中，打造食物形態吸收，大大提升人體吸收與利用率！  \n\n特別加入薄荷、生薑與葛縷子植物萃取及消化酵素，貼心舒緩腸胃，讓營養真正吸收不傷胃！加上純淨素食膠囊，補充健康零負擔。\n\n⏰ 限時 8 折優惠倒數中 (優惠價 HK$364 / 38PV，原價 HK$455)！\n優惠只到 9 月 30 日，數量有限，售完即止！立即登入EVO線上平台，把握最後機會入手！🛒💥\n\nMicroplex VMz® 全方位綜合維生素💊 https://bit.ly/483WOge\nEVO Online Office 線上平台 🛒 https://bit.ly/49DRp0i\nLatest News 最新消息 👀 https://bit.ly/4e09dU1\n\n⏳【Summer to Autumn SESONAL Sale🍂Final Countdown! 20% OFF ends September 30】⏳\n\nSeasonal changes can easily leave you feeling fatigued and weaken your immune system! To maintain peak condition, foundational nutrition is essential!💡\n\ndōTERRA Microplex VMz® Food Nutrient Complex is specially formulated for busy urbanites who frequently eat out and face unbalanced diets, providing 22 essential vitamins and minerals. Powered by a patented Glycoprotein Matrix, it binds nutrients into a yeast", "transcript": "", "brk": "開頭手法: 痛點直擊加限時倒數，點出轉季疲倦與優惠期限\n結構: 痛點切入 → 產品特色與成分 → 限時優惠與行動呼籲\n為什麼火: 分享數佔互動比例高，顯示限時折扣資訊具備高轉發價值\n改編角度: 借用季節轉換痛點與限時倒數結構，包裝覺察工具或心態課程優惠", "my": "", "tags": "doTERRAhk, MicroplexVMz, SeasonalSale, 最後倒數, 轉季必備", "bait": false, "type": "Post", "likes": 11, "views": 0, "shares": 5, "comments": 0, "er": 0.11, "followers": 14895, "date": "2026-09-28", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid08YAWcPpuJ5gaDxKTbsfpTktVxu9QUu554PL3bzkWtNL1La97rQTmB5vf3EQmWTeol", "video": false, "ratio": 0, "score": 0.24, "status": "未处理", "x": 0.7}, {"id": "fb_1591092649725414", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【Let It Glow✨ 一齊揭開Holiday Catalog節日驚喜】\n\n一年一度的節日驚喜如期而至，Holiday Catalog嘅一系列全新產品及精選套裝亦為大家準備就緒，更包括平日係港澳區買唔到嘅限定產品添！\n\n想知今年有咩唔可以錯過嘅產品？Product Trainer Eric會同2位團隊領袖Ming 及Suki率先同大家逐一拆開聖誕驚喜，帶您發掘今個節日最值得入手嘅產品與套裝！\n\n▶️即刻睇片，搶先探索節日限定禮物！\n\n---\n\n【Let It Glow✨ Unveil the Holiday Catalog Surprises!】\n\nThe most wonderful time of the year is here! Holiday Catalog Gifts Set are ready for you, including several brand new and exclusive products that are rarely seen in Hong Kong and Macau!\n\nWondering which products you can’t miss this year? Product Trainer Eric, along with team leaders Ming and Suki, will be the first to unbox these Christmas surprises one by one, helping you discover the must-have products and sets for this holiday season!\n\n▶️ Watch the video now to explore these holiday-exclusive treasures!\n\n#YLHK #YoungLiving #HolidayCatalog2026 #LetItGlow", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 節日預告 → 亮點介紹 → 觀看引導\n為什麼火: 結合限定產品與KOL開箱，吸引粉絲關注節日新品\n改編角度: 借用「年度驚喜揭曉」結構，推出覺察工具或轉念心法升級包", "my": "你開早會的時候，是不是也常常覺得手頭的案子堆得像山一樣，心裡其實很想停下來，卻又不敢鬆懈？\n\n在《當下的力量》這本書裡提到，當我們的注意力完全被焦慮和未完成的事佔據時，其實是失去了與當下的連結。\n\n今天可以試著在忙碌的工作空檔，花一分鐘把注意力放回自己的呼吸上，不急著去想下一個業績目標，只是單純感覺吸氣和吐氣。\n\n你可以花一點時間留言分享，今天在公司裡，有沒有哪一個瞬間，讓你覺得連呼吸都變得有點急促？", "tags": "YLHK, YoungLiving, HolidayCatalog2026, LetItGlow", "bait": false, "type": "Video", "likes": 89, "views": 5713, "shares": 7, "comments": 2, "er": 0.17, "followers": 56096, "date": "2026-10-31", "url": "https://www.facebook.com/reel/1008251385630601/", "video": true, "ratio": 0, "score": 0.23, "status": "未处理", "x": 0.6}, {"id": "fb_1595498395951506", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【探索Highland Flats 森林力量🌲鎖定11月6 日直播🔴】\n\n今個 Holiday Catalog 登場嘅  #HighlandFlats森林套裝，除左包含 4 支源自 Highland Flats 農場嘅精油，更承載住一段我哋創辦人Gary 同呢個農場嘅故事📖。\n\n今次我哋特別邀請到曾多次親身到訪 Highland Flats 農場嘅皇家皇冠鑽石級領袖 Joanne，同大家分享佢嘅體驗，及點樣透過簡單嘅儀式，將森林嘅寧靜與力量融入日常生活之中😮‍💨。\n\n如果您都已經收到Highland Flats森林套裝，不妨到時候一齊同步使用，洗滌心靈，喚醒身體深處嘅潛能與能量💚！\n\n11月6日下午6PM YLHK 官方Facebook 約定您！到時見😉\n---\n[Explore the Power of Highland Flats Trees🌲 Mark your calendar for the live stream on November 6 🔴]\n\nOne of the highlights of this year's Holiday Catalog, the #HighlandFlatsForestSet includes 4 essential oils sourced from Highland Flats Farm and carries a story of our founder Gary Young with this farm. 📖\n\nWe're excited to welcome Royal Crown Diamond Leader Joanne Kan, who has visited the farm multiple times in person. She will share her experiences and demonstrate how a simple ritual can help bring the peace and strength of the forest into everyday life 😮‍💨.\n\nIf you've already received your Highland Flats Forest Set, join us to get relaxed and immerse your", "transcript": "", "brk": "開頭手法: 節慶新品預告結合限時直播邀請，直接鎖定目標受眾注意力。\n結構: 新品故事背景 → 邀請重量級嘉賓分享體驗 → 號召同步參與直播與互動。\n為什麼火: 分享數達12次，因預告獨家創辦人故事與領袖親身體驗，具備高轉發價值。\n改編角度: 借用「幕後故事+領袖見證+特定日期直播」結構，推廣轉念心態導向的線上讀書會或工作坊。", "my": "你每天收工回家的時候，心裡是不是還裝滿了公司裡那些還沒解決的數字和客戶的要求？\n\n我想起《當下的力量》裡面提到的一個觀念，當我們的念頭一直被明天的壓力牽著走的時候，其實我們已經不在當下了。\n\n今天可以試試一個簡單的小練習，當你回到家泡上一杯咖啡的時候，先不要急著滑手機，花三分鐘只是靜靜地喝，感受杯子的溫度，留意自己呼吸的起伏，讓散亂的念頭慢慢靜落下來。\n\n你可以花一點時間，逐步去體會這種安靜的感覺，看看自己的內在力量是不是也跟著清明起來。\n\n生活覺察 轉念 內在力量", "tags": "HighlandFlats森林套裝, HighlandFlatsForestSet, YLHK, YoungLiving, HolidayCatalog2026, HighlandFlatsFarm, SeedToSeal", "bait": false, "type": "Post", "likes": 53, "views": 0, "shares": 12, "comments": 2, "er": 0.12, "followers": 56096, "date": "2026-11-04", "url": "https://www.facebook.com/YoungLivingHongKong/posts/pfbid0gqSnRX9yn42fgokjoNYY5z9aek1gZC8Kcr3CyaQfuDgWvkjaJKnt69Uz6kAAgZ97l", "video": false, "ratio": 0, "score": 0.21, "status": "未处理", "x": 0.5}, {"id": "fb_1515630387250560", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "🌿 「療癒全城・以愛為手」10,000人芳療分享挑戰 正式啟動！\n一滴精油 ‧ 雙手傳愛 ‧ 療癒全城\n\n💖 短短兩天，愛的力量已經在城中悄悄萌芽！\n感謝首批迅速加入的夥伴們，用溫柔的雙手陪伴並療癒了身邊的親友！每一滴精油、每一次觸碰，都是最真摯的關懷。\n\n這是一場為期三個月的愛心接力，邀請你今天做、明天做、天天做，讓這份療癒成為生活中的美麗習慣，持續點亮身邊的每一個人！✨\n\n📅 2026年10月1日 – 12月31日｜📍港澳站\n當我們面對無常與壓力，愛就是最大的療癒力量。\n\n💚 你的每一次分享，都是一份公益力量\n每為 1 位親友體驗精油並成功投稿，dōTERRA 香港即代表你捐出 HK$1 給 Healing Hands 療癒之手基金會，支持 2027 年香港社區服務。\n\n✨ 雙重獎勵等你解鎖：\n🎯 個人持續打卡：10日、30日、60日、90日都有專屬好禮\n🎯 全城齊心達標：1,000人解鎖活動訂製紀念品｜10,000人解鎖 2027 採集之旅免費名額\n\n簡單 3 步參與：\n1️⃣ 拍攝真實按摩互動體驗照，畫面要看到 doTERRA 產品\n2️⃣ 社交平台打卡 + #doTERRATouchWithLove #療癒全城以愛為手\n3️⃣ 填寫 Google Form 投稿\n\n立即了解詳情同開始分享👇\nhttps://bit.ly/doTERRATouchwithLove\n邀請你一齊用雙手點亮 10,000 個家庭，療癒全城！❤️\n\n#doTERRAhk #WeHelpTheWorldHeal", "transcript": "", "brk": "開頭手法: 活動邀請\n結構: 宣佈活動啟動 → 宣示願景與公益結合 →公佈獎勵機制與參與步驟\n為什麼火: 結合公益捐款與雙重獎勵機制，吸引粉絲積極參與並轉發\n改編角度: 結合覺察打卡與微公益行動，設計社群挑戰賽以提升粉絲參與轉發率", "my": "你想你將來的生活係點樣？你想成為一個點樣嘅人？\n\n面對每天排山倒海的工作與業績壓力，我們常常把精神全放在外面，卻忘了停下來照顧自己的狀態。\n\n正如我在《當下的力量》裡的體會，當思緒被工作填滿的時候，試著把注意力拉回呼吸，讓念頭靜落嚟。\n\n今天花三分鐘做一個小練習：放下手上的電話，閉上眼睛，做三次深呼吸，感受氣息在身體裡的流動。\n\n可以試著每天給自己這幾分鐘的空間，逐步找回內在力量。你今天有沒有給自己一點安靜的時間？歡迎留言分享你的體會。\n\n生活覺察 轉念 內在力量", "tags": "doTERRATouchWithLove, 療癒全城以愛為手, doTERRAhk, WeHelpTheWorldHeal", "bait": false, "type": "Post", "likes": 12, "views": 0, "shares": 4, "comments": 0, "er": 0.11, "followers": 14895, "date": "2026-10-02", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid0BmZyWAxANjEx9KWdgwdKFs8E5kuVtxhmKQAXaBjwyZ6P3rFNyVMDwqN8F2NKP9tml", "video": false, "ratio": 0, "score": 0.21, "status": "未处理", "x": 0.6}, {"id": "fb_1545421074271491", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "📖  2026年11月最新消息!\n今期精彩內容包括：\n🌟 每月1物：青檸 15mL\n🏷️ 9折主打 : 呵護系列 - 玫瑰 10mL\n🌻 新人推薦禮遇 - 三花齊放🌼香遇新友👥\n🥳 ō Camp 迎新營\n🙌🏻 dōGATHER Day 同樂日\n💪🏻 健康研究班：如何挑選安全優質的精油\n💼 業務培訓班 - 行動篇\n🫶🏻 「療癒全城・以愛為手」 10,000人芳療分享挑戰\n📣 客服訊息 \n詳情即睇👇\nhttps://bit.ly/4e09dU1\n\n📖 2026 November Latest NEWS is ready!\nContent includes:\n🌟 Product of the Month : Lime 15mL\n🏷️ 10% Off : Rose Touch 10mL\n🌻 Enrollment Campaign\n🥳 ō Camp\n🙌🏻 dōGATHER Day\n💪🏻 Get to know dōTERRA (Chinese)\n💼 Business Training (Chinese)\n🫶🏻 Heal the City, Touch with Love!\n📣 Customer Service News\nLink 👇\nhttps://bit.ly/3zRdXew", "transcript": "", "brk": "開頭手法: 數字\n結構: 預告時間 → 條列重點 → 點擊連結\n為什麼火: 資訊整合清晰方便粉絲快速獲取最新資訊\n改編角度: 整合每月覺察主題與轉念練習重點清單吸引收藏", "my": "今晚收工坐低嘅時候，你有無問過自己，其實你想你將來嘅生活係點樣？\n\n好多時我哋喺職場上面對住接踵而來嘅業績壓力，日日趕住同時間賽跑，個腦轉個不停，好容易就會忽略咗自己真正想要嘅方向。當念頭被工作塞滿嘅時候，我哋好難去聽清楚自己內在嘅聲音。\n\n我想同你分享一個好簡單嘅日常練習。\n\n今晚返到屋企，試下花三分鐘時間，唔好睇手機，只是慢慢咁呼吸。當吸氣同呼氣變得通暢嘅時候，留意下自己嘅身體邊個部位最緊繃，然後在心入面同自己講，放低依刻嘅忙碌，比自己靜落嚟。\n\n不需要急住去改變所有嘢，只要先建立依個覺知，慢慢去感受當下嘅自己。\n\n可以有體驗再去選擇，背後的東西可以逐步了解。如果你今日都有咁樣嘅片刻，不妨留言分享一下你嘅體會。\n\n生活覺察\n轉念\n內在力量", "tags": "", "bait": false, "type": "Post", "likes": 12, "views": 0, "shares": 2, "comments": 1, "er": 0.1, "followers": 14895, "date": "2026-11-01", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid033vVJRDAxzixSFiGErEapdPYjxBURu8eei8gvEeSqE4HM3BQLiciWaB3prcaPZGUEl", "video": false, "ratio": 0, "score": 0.17, "status": "未处理", "x": 0.5}, {"id": "fb_1549695357177396", "tracker": "Mary Ku 專頁", "competitor": "doterrahk.zh", "caption": "【卓越品質，源自對每一個細節的堅持 💧✨】\n\n在 doTERRA，我們深信：每一瓶好精油的誕生，都來自於一份對人、對大自然最真摯的愛與用心。\n\n由與全球農民攜手耕耘的溫暖連結、大自然的植物採集、精密蒸餾、到多達 80,686 次的 CPTG® 專業純正調理級認證質量測試，每一個步驟，都承載著我們對品質的極致把關：\n\n🌿約 4,500萬公斤 天然植物原料的用心耕耘\n💧2.6 億+毫升 純淨精油的精密蒸餾\n🔬80,686次 CPTG® 嚴格把關，確保無有害填充物、人工合成成分或污染物\n🛡️100%匠心守護，將大自然的純淨完美封存\n\n正如保加利亞種植者 Violeta 所分享：「我希望使用薰衣草精油的人知道，這裡出品的是最純正的精油，亦可以完全信任標籤上所寫的一切。」   \n\n每一滴精油，都是我們跨越萬里，獻給您與家人健康最真誠的承諾 💚\n\n👉🏻 滑動圖片，一同見證每一滴純淨背後的動人承諾！✨\n\n一起點擊連結，回顧我們在 2025 年共同實現的影響力！🥰\nhttps://bit.ly/2025_doterra_impact_report\n\nEVO Online Office 線上辦公室🛒 https://bit.ly/49DRp0i\nLatest News 最新消息👀 https://bit.ly/4e09dU1\n\n【Exceptional quality born from unwavering dedication to every detail💧✨】\n\nAt doTERRA, we deeply believe that exceptional products begin with intentional sourcing and a heartfelt commitment to both people and the planet.\n\nFrom warm, meaningful connections with our global farming partners, botanical harvesting, precise distillation, to 80,686 CPTG® Certified Pure Therapeutic Grade tests, every step reflects our ultimate commitment to q", "transcript": "", "brk": "開頭手法: 品牌價值與核心信念的品質背書\n結構: 理念引言 → 數據與農民故事支持 → 行動呼籲與連結\n為什麼火: 利用具體龐大數據與生產者見證建立品牌公信力\n改編角度: 以生活覺察或轉念導師的個人成長數據與學員見證建立專業信任感", "my": "你想你將來的生活係點樣？你想成為一個點樣嘅人？\n\n面對日常密密麻麻的工作與銷售目標，我們常常把注意力全部放在外在的忙碌上，卻忽略了自己的內在其實也需要一份細緻的照顧。\n\n正如我經常在生活覺察筆記裡提到的，當你的念頭靜落嚟，內在力量自然會浮現。\n\n今天試著做一個簡單的小練習：在接下來的日常中，抽出一分鐘時間，閉上眼睛，感受自己的呼吸。不需要改變什麼，只是單純地陪伴自己，慢慢讓呼吸變得通暢。\n\n可以花幾分鐘時間，感受這份專屬於自己的靜心時刻，慢慢找回內在的清明。\n\n你今天花左幾多時間同自己對話？歡迎留言分享你的體會。\n\n生活覺察\n轉念\n內在力量", "tags": "doTERRAhk, CoImpactSourcing, 互相效力合作計劃, 瓶子的兩端, CPTG", "bait": false, "type": "Post", "likes": 15, "views": 0, "shares": 2, "comments": 0, "er": 0.11, "followers": 14895, "date": "2026-11-05", "url": "https://www.facebook.com/doterrahk.zh/posts/pfbid07auPUcHqhby9tpVcdqf3LPeDmeMoaVaVCKyQgtFqEH9yD54n1BR6qNM6DNACxMoAl", "video": false, "ratio": 0, "score": 0.17, "status": "未处理", "x": 0.5}, {"id": "fb_1602270198607659", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【短暫嘅停頓⏸️ 為前行注入力量👣】\n\n臨近年尾，係咪有太多事項需要計劃和安排？工作目標、家庭聚會、新一年計劃……有時候腦海中嘅思緒不停打轉，令人難以專注於當下。\n\n今個月，不妨為自己預留一點時間，透過簡單嘅 Grounding 練習，重新連結身體與周遭環境，回到當下。在有意識嘅停頓之中，找回內在嘅平靜、清晰，以及前行嘅方向。\n\n一起試試 3-3-3 Grounding 練習：\n\n✨ 稀釋並塗抹 #Grounding複方精油 於手腕上\n✨ 慢慢深呼吸 3 次，每次都聞到 Grounding 嘅香氣\n✨ 說出 3 樣你看見嘅事物、3 種你聽見嘅聲音，以及 3 件你能感受到嘅事物\n\n---\n\n【A Brief Pause ⏸️ A Stronger Step Forward 👣】\n\nAs the year draws to a close, does it feel like there’s always something to plan for? Work goals, family gatherings, and preparations for the year ahead can leave our minds constantly racing.\n\nThis month, take a moment for yourself through a simple grounding practice. reconnecting with your body and the world around you. Through intentional pauses, you can cultivate a sense of calm, clarity, and direction as you move forward.\n\nTry the 3-3-3 Grounding Practice:\n\n✨ Dilute and apply #Grounding  Essential Oil Blend to your wrists\n✨ Take 3 slow, deep breaths, inhaling the aroma with each breath\n✨ Name 3 things you can see, 3 sounds you can hear, and 3 s", "transcript": "", "brk": "開頭手法: 痛點直擊，點出年尾忙碌導致思緒打轉的日常場景\n結構: 點出年尾忙碌痛點 → 提出暫停與覺察的重要性 → 給出3-3-3具體練習步驟\n為什麼火: 分享數達11次，代表具實用價值的練習步驟特別吸引讀者收藏轉發\n改編角度: 借用「年度忙碌痛點+三步驟實用覺察練習」結構，引導讀者進行心態重整", "my": "你想你將來嘅生活係點樣？面對年尾緊湊嘅工作目標同各種安排，有冇試過腦海入面嘅念頭不停打轉，好難專注喺而家呢一刻？\n\n忙碌嘅時候，可以試下幫自己做一個簡單嘅停頓。\n\n這一次，我們可以透過當下的力量練習，把注意力慢慢帶回身體。\n\n今天就可以試試這個小練習：\n\n停下手頭嘅工作，慢慢深呼吸三次，感覺空氣進出。\n然後，在心裡默默留意周圍看見的三樣事物、聽見的三種聲音，以及身體正在感受的三種觸感。\n\n當念頭慢慢靜落嚟，清明嘅感覺就會浮現，方向自然會變得清晰。\n\n可以有體驗再去選擇，背後的東西可以逐步了解。邀請你今天花幾分鐘練習一下，找回內在力量。\n\n生活覺察 轉念 內在力量", "tags": "Grounding複方精油, Grounding, YLHKYoungLiving, EssentialOilBlend, Blendofthemonth", "bait": false, "type": "Video", "likes": 40, "views": 2109, "shares": 11, "comments": 0, "er": 0.09, "followers": 56096, "date": "2026-11-10", "url": "https://www.facebook.com/reel/1829700778513394/", "video": true, "ratio": 0, "score": 0.17, "status": "未处理", "x": 0.4}, {"id": "fb_1582533693914643", "tracker": "Mary Ku 專頁", "competitor": "YoungLivingHongKong", "caption": "【YLHK 13週年晚宴📸精彩回顧】\n\n今年主題See Beyond, Rise Beyond — 每一段經歷，都讓我哋成長，走得更遠✨YLHK 13週年晚宴上，一眾品牌夥伴盛裝相聚，回顧過去一年嘅收穫同喜悅，慶祝每個值得銘記嘅突破🥂\n\n好榮幸邀請到Young Living品牌大使Josef Young同首席營運官Prasad Gankanda親臨香港，一同慶祝呢個特別嘅時刻，亦感謝2位領袖真誠分享生命中嘅重要轉變💚為在場每一位帶來深刻嘅啟發。\n\n📸一齊重溫當晚精彩時刻！如欲欣賞更多相片👉 https://flic.kr/s/aHBqjD8hLJ\n---\n【YLHK 13th Anniversary Celebration Dinner📸Highlights Recap】\n\nThis year our theme is “See Beyond, Rise Beyond”. Every experience helps us grow and takes us further✨. At the YLHK 13th Anniversary Celebration Dinner, brand partners gathered in their finest attire, looked back on the achievements and joy of the past year, and celebrated every memorable breakthrough🥂.\n\nWe are honored to welcome Young Living Brand Ambassador Josef Young and Chief Operating Officer Prasad Gankanda to Hong Kong and celebrate this special moment with us. A special thank you also goes to the 2 leaders who sincerely shared the significant changes in their lives💚, which deeply inspired everyone in attendance.\n\n📸Let’s recall the wonderful ", "transcript": "", "brk": "開頭手法: 活動邀請\n結構: 核心主題 → 嘉賓致謝 → 相片連結\n為什麼火: 品牌活動紀實與大量照片吸引參與者瀏覽及點讚\n改編角度: 借用活動回顧結構，改寫為轉念工作坊或讀書會的現場精華與學員得著分享", "my": "你想你將來的生活係點樣？你想成為一個點樣的人？\n\n當面對工作上的轉折或者業績的壓力時，我們往往習慣只看眼前那一步，卻忽略了其實每一段經歷，都在讓我們慢慢看清自己的方向。\n\n這讓我想起在《當下的力量》裡的提醒，當念頭靜落嚟的時候，我們才能真正看見內在力量。\n\n今天試著做一個簡單的小練習，在忙碌的工作空檔停下來三分鐘，閉上眼睛，覺察自己的呼吸，把注意力帶回當下，不急著去解決任何問題。\n\n可以每天花幾分鐘練習一下，慢慢找回內在的清明。\n\n生活覺察 轉念 內在力量", "tags": "YoungLiving, YLHK, YLHK13, 13Anniversary, SeeBeyondRiseBeyond", "bait": false, "type": "Post", "likes": 81, "views": 0, "shares": 1, "comments": 0, "er": 0.15, "followers": 56096, "date": "2026-10-23", "url": "https://www.facebook.com/YoungLivingHongKong/posts/pfbid0zgsCo1oDefXqiYdV7z4CADhR2ZMzgj2gsh22u6v1Z6uth68bdG5q97XShdnXF1RDl", "video": false, "ratio": 0, "score": 0.15, "status": "未处理", "x": 0.4}, {"id": "fb_1593288099478313", "tracker": "Mary Ku 專頁", "competitor": "memoire.com.hk", "caption": "【 𝑴𝒆𝒎𝒐𝒊𝒓𝒆 𝑨𝒄𝒂𝒅𝒆𝒎𝒚 ☃️ 聖誕購物禮遇】\n\n 💠 皇牌產品 買二送一\n 𝗖𝗼𝗹𝗹𝗮𝗴𝗲𝗻 𝗦𝗲𝗿𝘂𝗺 膠原透明質酸精華\n \n🎄買𝟐送𝟏 #聖誕優惠 🎁  \n\n🌿 𝟱大功效 \n➊ 深層保濕，促進皮膚細胞，極致保水\n➋ 抗氧化，含抗氧化物質，保護肌膚免受自由基的損害\n➌ 抗皺，刺激皮膚細胞的膠原蛋白合成，減少皺紋和細紋\n➍ 緊緻，增強皮膚的彈性和緊實度\n➎ 美白，減少黑色素的生成，提亮皮膚色澤 \n\n➀ 美白：𝑹𝒐𝒔𝒆 玫瑰\n➁ 抗敏：𝑳𝒂𝒗𝒆𝒏𝒅𝒆𝒓 薰衣草\n➂ 修護：𝑵𝒆𝒓𝒐𝒍𝒊 橙花 \n\n———————\n查詢Whatsapp: 852 5500 3487\n網站：http://memoire.com.hk/\n地址：尖沙咀北京道53-63號國都大廈9樓902室\n\n#MemoireAcademy #PPAHK #香薰精油 #skincare essentialoil insideoutbeauty 有機 純素 英國品牌 精油 防敏 香薰治療 PennyPrice 緊緻 HyaluronicAcid 皮膚救星 美白 花水 抗皺 深層保濕 抗氧化 濕疹 膠原透明質酸 玻尿酸 皇牌 Collagen HA  聖誕禮物", "transcript": "", "brk": "開頭手法: 活動邀請\n結構: 節日優惠宣告 → 產品功效列點 → 購買選項說明 → 聯絡資訊\n為什麼火: 資料顯示讚好留言分享皆為零，無法看出爆紅原因\n改編角度: 將產品促銷轉為生活覺察練習的限時免費領取，用相同結構吸引參與", "my": "你想你每天忙完回到家的時候，有沒有一刻是真正屬於你自己的？\n\n面對工作上的業績壓力，還有家裡大大小小的事情，我們常常把精神都放在外面，卻很少留一點空間給自己。\n\n埃克哈特·托勒在《當下的力量》裡提到，當你的注意力回到呼吸上，念頭就會慢慢靜落下來。\n\n今天試着花三分鐘時間，放下手上的電話，閉上眼睛，感受一下自己的呼吸。\n\n這只是一個簡單的日常練習，陪你慢慢找回內在力量。\n\n今天如果有一刻這樣的覺察，歡迎留言分享你的體會。\n\n#生活覺察 #轉念 #內在力量", "tags": "聖誕優惠, MemoireAcademy, PPAHK, 香薰精油, skincare", "bait": false, "type": "Post", "likes": 0, "views": 0, "shares": 0, "comments": 0, "er": 0.0, "followers": 3328, "date": "2026-11-05", "url": "https://www.facebook.com/memoire.com.hk/posts/pfbid0bfmoSdoWAtR3eZzhk6LVPhXgVhxeTL1GSrMs3Yux6uovyWQqvbRn2qrRFKo5zHWql", "video": false, "ratio": 0, "score": 0.0, "status": "未处理", "x": 0}, {"id": "fb_1118969744386106", "tracker": "Mary Ku 專頁", "competitor": "heungyau.incense", "caption": "🌰「香港的聖誕節，沒有雪，卻有屬於自己的冬日味道。」\n\n講起香港的聖誕，你會想起甚麼？\n\n沒有白雪覆蓋的街道，\n卻有熱鬧的聖誕燈飾、\n冬天街頭的糖炒栗子，\n還有那份熟悉的節日氣氛，\n\n好記得小時候看《麥兜》，\n那種未吃過香噴噴的聖誕火雞的期待，\n也變成了我的聖誕幻想。\n\n………………………………………………\n\n🌰 Hong Kong Winter\nCaramel & Roasted Chestnut\n\n我們以香甜的焦糖\n配上烘烤栗子的溫暖堅果香氣\n將香港冬日的味道收藏在小小的火柴香裡。\n\n………………………………………………\n\n#聖誕發售【Find Your Perfect Match】香丘聖誕火柴香\n香丘聖誕樹火柴香將四個充滿節日氣氛的地方化成獨特香氣，收藏於小巧的火柴香之中。只需輕輕點燃，就能讓香氣在空間中慢慢散發，瞬間帶你感受世界各地的聖誕氛圍。以聖誕樹為造型，為日常增添節日暖意，讓你與 Perfect Match 一起享受一場香氣旅行。\n\n………………………………………………\n\n現售 $138/盒 \n官網限定優惠 $500/4盒（款式備注自訂）\n連續於各大寄賣店及官網有售", "transcript": "", "brk": "開頭手法: 日常場景與集體回憶共鳴\n結構: 本地情懷喚醒 → 產品氣味連結 → 聖誕新品介紹與優惠\n為什麼火: 資料顯示讚好留言分享均為零，並無引發熱度\n改編角度: 借用集體童年記憶帶出生活覺察，轉念連結內心溫暖與銷售心態", "my": "香港的冬天，沒有雪，卻有屬於我們自己的忙碌節奏。\n\n講起日常的忙碌，你會想起甚麼？\n\n是堆在桌上處理不完的報表，\n是客戶電話裡急促的催促，\n還是深夜下班時，\n走在街上那陣冰涼的風。\n\n好記得剛開始做銷售的那幾年，\n總覺得只要再努力一點，\n把業績追上去，\n心裏的焦慮就會消失。\n\n但後來慢慢發現，\n外在的目標追不完，\n真正需要的，\n是讓自己的念頭靜落嚟。\n\n在《當下的力量》裏面提到，\n當我們把注意力回到此時此刻，\n很多原本卡住的感覺，\n就會開始慢慢通暢。\n\n今天想跟你分享一個很簡單的小練習：\n在忙到喘不過氣的時候，\n停下手上的工作，\n花一分鐘閉上眼睛，\n把注意力放在自己的呼吸上。\n\n感受氣息慢慢進來，\n再慢慢出去，\n不急着去想待會要面對的事。\n\n你可以試着在今天給自己幾分鐘的安靜時間，\n慢慢找回內在力量。\n你今天過得怎麼樣？\n歡迎在下面留言分享你的體會。\n\n生活覺察 轉念 內在力量", "tags": "聖誕發售", "bait": false, "type": "Post", "likes": 0, "views": 0, "shares": 0, "comments": 0, "er": 0.0, "followers": 822, "date": "2026-11-12", "url": "https://www.facebook.com/heungyau.incense/posts/pfbid0XToEFsizCC4B6EcihHd1UnmE2CySgpAv2m8jkSjTyYnHBrwdaeLgMWrdZGheoeaEl", "video": false, "ratio": 0, "score": 0.0, "status": "未处理", "x": 0}, {"id": "fb_1593397386134051", "tracker": "Mary Ku 專頁", "competitor": "memoire.com.hk", "caption": "🌿 【香薰入門證書課程】現正招生！ ✨\n給自己 4 小時的時間，走進香薰的療癒世界，學習用天然精油照顧自己與家人身心健康。\n💡 課程亮點：\n 了解精油與植物底油基礎及安全使用方法\n 學習將香薰融入日常舒壓與生活應用\n 現場親手製作 10ml 天然護膚油 1 支（價值 $280）\n 完課獲頒 修讀證書 乙張\n🗓 時間： 1:00 PM – 5:00 PM (4小時)\n💰 優惠體驗價： $800 (原價 $1800)\n📍 地點： 尖沙咀北京道53-63號國都大廈9樓902室\n📩 名額有限，歡迎 DM 查詢或報名！\n#MemoireAcademy #PPAHK #香薰治療 #精油入門 #身心平衡 手作工作坊 尖沙咀 PennyPrice 護膚DIY", "transcript": "", "brk": "開頭手法: 日常場景\n結構: 吸引注意 → 課程亮點 → 詳細資訊 → 行動呼籲\n為什麼火: 資料顯示讚好、留言、分享皆為零，此貼文並未引發互動\n改編角度: 改以生活覺察痛點切入，帶出心態轉念課程，強調內在成長價值", "my": "你想你將來的生活係點樣？你想成為一個點樣嘅人？\n\n每天忙著應付客戶和業績的時候，你有多久沒有真正停下來，好好呼吸一下？\n\n我在讀《當下的力量》的時候，常常提醒自己，心靈的力量往往就藏在最簡單的呼吸裡。當念頭靜落嚟，你才能真正看清自己內在的力量。\n\n今天試試一個簡單的小練習，花三分鐘坐在椅子上，閉上眼睛，把注意力放在呼吸上。不需要改變它，只是感受氣息的進出，慢慢把心靜落嚟。\n\n背後的東西可以逐步了解，先給自己幾分鐘的安靜，陪你慢慢放鬆下來。\n\n生活覺察 轉念 內在力量", "tags": "MemoireAcademy, PPAHK, 香薰治療, 精油入門, 身心平衡", "bait": false, "type": "Post", "likes": 0, "views": 0, "shares": 0, "comments": 0, "er": 0.0, "followers": 3328, "date": "2026-11-05", "url": "https://www.facebook.com/memoire.com.hk/posts/pfbid023dTEApLHbpZUCPxyw9iPHUyChEz7hTSXNAJZwUbEctnht3Vne7Lfc5ufuxVXmEhxl", "video": false, "ratio": 0, "score": 0.0, "status": "未处理", "x": 0}, {"id": "fb_1118969311052816", "tracker": "Mary Ku 專頁", "competitor": "heungyau.incense", "caption": "🌰「香港的聖誕節，沒有雪，卻有屬於自己的冬日味道。」\n\n講起香港的聖誕，你會想起甚麼？\n\n沒有白雪覆蓋的街道，\n卻有熱鬧的聖誕燈飾、\n冬天街頭的糖炒栗子，\n還有那份熟悉的節日氣氛，\n\n好記得小時候看《麥兜》，\n那種未吃過香噴噴的聖誕火雞的期待，\n也變成了我的聖誕幻想。\n\n………………………………………………\n\n🌰 Hong Kong Winter\nCaramel & Roasted Chestnut\n\n我們以香甜的焦糖\n配上烘烤栗子的溫暖堅果香氣\n將香港冬日的味道收藏在小小的火柴香裡。\n\n………………………………………………\n\n#聖誕發售【Find Your Perfect Match】香丘聖誕火柴香\n香丘聖誕樹火柴香將四個充滿節日氣氛的地方化成獨特香氣，收藏於小巧的火柴香之中。只需輕輕點燃，就能讓香氣在空間中慢慢散發，瞬間帶你感受世界各地的聖誕氛圍。以聖誕樹為造型，為日常增添節日暖意，讓你與 Perfect Match 一起享受一場香氣旅行。\n\n………………………………………………\n\n現售 $138/盒 \n官網限定優惠 $500/4盒（款式備注自訂）\n連續於各大寄賣店及官網有售", "transcript": "", "brk": "開頭手法: 透過地方集體回憶與季節感帶出痛點直擊\n結構: 喚起集體回憶 → 連結產品氣味 → 介紹聖誕限定產品及優惠\n為什麼火: 讚好留言分享為零，數據不足無法反映真正受歡迎原因\n改編角度: 借用季節限定與集體回憶結構，轉化為覺察日常小確幸的轉念練習", "my": "你想你將來嘅生活係點樣？你想成為一個點樣嘅人？\n\n講起香港的冬天，總是在密集的行程和工作的壓力中度過。\n\n街上的人步履匆匆，腦袋裡轉著明天要跟進的客戶、還沒達標的業績，連呼吸好像都變得緊湊。\n\n這讓我想起在日常生活中，我們常常把注意力全部放在外在的目標上，卻很少停下來，問問自己此刻的狀態是什麼。\n\n當念頭太多，整個人被焦慮和忙碌推著走的時候，不妨試試這個簡單的練習。\n\n花一到三分鐘時間，找一個舒服的姿勢坐好，閉上眼睛，把注意力放回自己的呼吸上。\n\n吸氣的時候，覺察空氣進出鼻腔的感覺；呼氣的時候，在心裡默默放鬆肩膀，讓緊繃的念頭跟著呼吸慢慢沉澱下來。\n\n不需要刻意改變什麼，只是單純地陪伴自己，讓內在力量重新通暢起來。\n\n你可以每天花幾分鐘這樣練習，逐步找回內在的清明與方向。\n\n今天，當你覺得壓力有點大的時候，願意給自己留白幾分鐘嗎？歡迎留言分享你的體會。\n\n生活覺察\n轉念\n內在力量", "tags": "聖誕發售", "bait": false, "type": "Post", "likes": 0, "views": 0, "shares": 0, "comments": 0, "er": 0.0, "followers": 822, "date": "2026-11-12", "url": "https://www.facebook.com/heungyau.incense/posts/pfbid02bTydCHkadsYFjwsTPRqSQPJLRk8Hjw22uiZ5Yz1HCptrU4f2m75ZsfsszYYwYgPYl", "video": false, "ratio": 0, "score": 0.0, "status": "未处理", "x": 0}, {"id": "fb_1486013020367825", "tracker": "Mary Ku 專頁", "competitor": "healingmuseumhk", "caption": "【꧁英國天使靈氣©課程꧂】\n⠀\n英國天使靈氣©是一套溫和、簡單、任何人都可以學習的療癒系統。它匯聚天使王國純淨的能量，以及神聖源頭的智慧與無條件的愛。在課程中，你將學習與大天使、揚昇大師及星際療癒者攜手，為自己及所愛的人進行療癒——支持情緒、思維與靈性層面的釋放與平衡，並溫柔地照顧你的內在小孩。\n\n英國天使靈氣©屬輔助療癒系統，遍佈全球，系統具國際認受性，已在國際補充治療師協會（IICT）註冊，並於 The Healer Foundation 登記，附屬於英國補充醫學協會（BCMA）。不少學員為醫護人員，輔助及支援醫生、護士或患者。\n⠀\n🕯️甚麽人士適合參加？\n✶ 希望讓生命得到轉化、提昇\n✶ 願意脫離過往所有負面情緒及阻礙\n✶ 想學習用途廣泛、助人助己的療癒系統\n✶ 願意更多天使的光與愛帶進生命\n✶ 容許天使在你的生命中陪伴及支持\n\n——\n\n🕯國際認證英國官方天使靈氣© 一、二階證書課程（二天）\n日期：2026年11月28日 ㊅ – 11月29日 ㊐\n時間：10:30am – 6:30pm（因應同學課程進度而定，包括🍽午膳時間）\n地點 : 荔枝角區（鄰近地鐵站）\n形式：小班教學實體課（名額有限；不設遙距課程）\n官方認證導師：Bella Poon\n\n🕯️ 為甚麼要合報1-4階？\n✶ 官方推介的完整療癒手法 第1、2階讓你與天使王國建立連結，學習基本的療癒方法；第3、4階則深化這份連結，學習紮根，並完滿所有療癒手法。英國天使靈氣官方推介完成1-2階及3-4階，才是一套完整的自我療癒手法。\n\n✶ 循序漸進，學習不中斷 先完成1-2階，再與同班同學一起商議3-4階的上課日期。同一班同學一起成長，學習節奏更連貫。\n\n費用：\n➤ 一、二階公價HKD$4,680\n╲ 費用包括 .ᐟ ╱ 英國官方認證第一、二階中文課程手冊、導師整合補充筆記、英國官方證書、及Healing Museum獨有❝純天然列姆利亞❞大師水晶（產量稀少，先報先得，送完即止）\n\n➤ ⚜️ ╲ 合報更優惠 .ᐟ ╱ ⚜️ 分開報讀1-2階及3-4階，原價合共 HKD$10,560；合報只需 HKD$9,504，節省 HKD$1,056。\n\n*如4人或以上同行，即可以包班上課，可約平日或假日授課\n\n· 課程將會在收妥全數課程費用後才獲確認\n· 此課程為國際認證課程，報名一經確定不得更改至其他課程或取消，亦不設退款", "transcript": "", "brk": "開頭手法: 活動邀請\n結構: 課程介紹 → 適合對象 → 報名資訊與優惠\n為什麼火: 資料中數據為零，無法分析出火的原因\n改編角度: 轉化為推廣生活覺察工作坊的資訊貼文，列明課程收穫與報名優惠", "my": "你想你將來的生活係點樣？你想成為一個點樣的人？\n\n面對壓力和忙碌的銷售工作，有時候我們容易在日常裡迷失方向。艾克哈特·托勒在《當下的力量》裡提醒我們，當念頭靜落嚟，清明的覺知就會出現。\n\n今天試一個簡單的小練習：在工作空檔花三分鐘，把手輕輕放在胸口，感受自己的呼吸，甚麼都不用做，只是陪伴自己慢慢把步伐放慢。\n\n背後的东西可以逐步了解，先找回自己的內在力量。今天不妨抽幾分鐘試試，也可以留言分享你的體會。\n\n生活覺察\n轉念", "tags": "AngelicReiki, 英國天使靈氣, 靈氣療癒, 香港療癒", "bait": false, "type": "Post", "likes": 0, "views": 0, "shares": 0, "comments": 0, "er": 0.0, "followers": 304, "date": "2026-11-12", "url": "https://www.facebook.com/healingmuseumhk/posts/pfbid0Qci6wjsLoVWh4HjT47bgVXmgqLXNzfoXMBEYzJYbwaGG6cTjH2m3khfXk14ZH4pHl", "video": false, "ratio": 0, "score": 0.0, "status": "未处理", "x": 0}]</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const SUPA = 'https://czhzhitlamxkmrlqdenx.supabase.co';
+const ANON = 'sb_publishable_D7rv2Nmba7hEk1yHBbshqA_PilT2ylz';
+document.getElementById('updated').textContent = '数据更新于 2026-11-13 19:03 (GMT+8)';
+
+const $ = id => document.getElementById(id);
+const I = n => '<svg class="ic"><use href="#i-' + n + '"/></svg>';
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : String(n);
+const getKey = () => ANON;  // anon key is baked in — safe, can only change status
+const firstLine = c => ((c || '').split('\n').map(l => l.trim()).filter(Boolean)[0] || '(无文案)');
+const byRec = {}; DATA.forEach(d => byRec[d.id] = d);
+const chUrl = c => /^[0-9]+$/.test(c)
+  ? 'https://www.facebook.com/profile.php?id=' + c
+  : 'https://www.facebook.com/' + encodeURIComponent(c);
+
+function toast(msg, ok) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  t.style.borderColor = ok ? 'var(--green)' : 'var(--red)';
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ---- mission card ----
+function renderMission() {
+  const role = localStorage.getItem('tm_role') || '';
+  const name = localStorage.getItem('tm_name') || '';
+  const pend = DATA.filter(d => d.status === '未处理').length;
+  const hot = DATA.filter(d => d.status === '未处理' && (d.x || 0) >= 2).length;
+  const queue = DATA.filter(d => d.status === '拍摄中').length;
+  const done = DATA.filter(d => d.status === '已处理').length;
+  const m = $('mission');
+  if (role === 'Marketer') {
+    m.innerHTML = '<div class="mt">' + I('flame') + esc(name) + ',任务:从待挑选里选出值得拍的</div>'
+      + '<div class="md">待挑选 <b>' + pend + '</b> 条(其中真爆款 ×2+ 有 <b>' + hot + '</b> 条)'
+      + ' · 从下面清单直接选,或去雷达细看</div>';
+  } else if (role === 'Content Creator') {
+    m.innerHTML = '<div class="mt">' + I('video') + esc(name) + ',任务:清空拍摄中队列</div>'
+      + '<div class="md">队列还有 <b>' + queue + '</b> 条待做 · 已完成共 <b>' + done + '</b> 条</div>';
+  } else {
+    m.innerHTML = '<div class="mt">' + I('flame') + '团队概览</div>'
+      + '<div class="md">待挑选 <b>' + pend + '</b> 条 · 拍摄中 <b>' + queue + '</b> 条 · 已完成 <b>' + done + '</b> 条</div>';
+  }
+}
+
+function orderSections() {
+  // Marketer sees picks first; Creator sees shooting queue first
+  if ((localStorage.getItem('tm_role') || '') === 'Marketer') {
+    $('secShoot').parentNode.insertBefore($('secPick'), $('secShoot'));
+  } else {
+    $('secPick').parentNode.insertBefore($('secShoot'), $('secPick'));
+  }
+}
+
+// ---- identity ----
+function meLabel() {
+  const n = localStorage.getItem('tm_name'), r = localStorage.getItem('tm_role');
+  $('meLabel').innerHTML = n ? '<b>' + esc(n) + '</b>&nbsp;· ' + esc(r || '') : '未登记';
+}
+function showOverlay() {
+  $('oName').value = localStorage.getItem('tm_name') || '';
+  $('oRole').value = localStorage.getItem('tm_role') || 'Marketer';
+  $('overlay').classList.add('show');
+}
+$('oSave').onclick = () => {
+  const n = $('oName').value.trim();
+  if (!n) { $('oName').focus(); return; }
+  localStorage.setItem('tm_name', n);
+  localStorage.setItem('tm_role', $('oRole').value);
+  $('overlay').classList.remove('show');
+  meLabel(); orderSections(); renderMission();
+  refreshStatuses();
+};
+$('meBtn').onclick = showOverlay;
+meLabel();
+if (!localStorage.getItem('tm_name')) showOverlay();
+
+// ---- tabs ----
+document.querySelectorAll('.ntab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.ntab').forEach(x => x.classList.toggle('on', x === t));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('on', p.id === 'p-' + t.dataset.p));
+  if (t.dataset.p === 'radar' && !$('radarWrap').querySelector('iframe')) {
+    const f = document.createElement('iframe'); f.src = 'index.html'; $('radarWrap').appendChild(f);
+  }
+});
+
+// ---- status write ----
+async function setStatus(d, val) {
+  try {
+    const r = await fetch(SUPA + '/rest/v1/posts?post_id=eq.' + encodeURIComponent(d.id), {
+      method: 'PATCH',
+      headers: { 'apikey': ANON, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ status: val })
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    d.status = val;
+    cacheStatus(d.id, val);
+    toast('✓ @' + d.competitor + ' → ' + val, true);
+  } catch (e) {
+    toast('失败: ' + e.message, false);
+  }
+  renderWork();
+}
+
+// ---- 今日工作 ----
+function pillBtn(cls, icon, label) {
+  return '<button class="pill ' + cls + '">' + I(icon) + label + '</button>';
+}
+
+function renderWork() {
+  const pend = DATA.filter(d => d.status === '未处理');
+  const shoot = DATA.filter(d => d.status === '拍摄中');
+  const done = DATA.filter(d => d.status === '已处理');
+  $('stPending').textContent = pend.length;
+  $('stShoot').textContent = shoot.length;
+  $('stDone').textContent = done.length;
+
+  // shooting queue
+  const sl = $('shootList'); sl.innerHTML = '';
+  if (!shoot.length) sl.innerHTML = '<div class="none">队列是空的 — Marketer 去爆款雷达挑几条拖进「拍摄中」</div>';
+  shoot.forEach(d => {
+    const r = document.createElement('div'); r.className = 'row';
+    r.innerHTML = '<a class="who2" href="' + chUrl(d.competitor) + '" target="_blank">' + esc(d.competitor) + '</a>'
+      + ((d.x || 0) >= 2 ? '<span class="xb">×' + d.x + '</span>' : '')
+      + '<span class="hookline">' + esc(firstLine(d.caption)) + '</span>'
+      + '<a class="pill" href="' + d.url + '" target="_blank">' + I('ext') + '原帖</a>'
+      + pillBtn('ok', 'check', '完成') + pillBtn('bad', 'x', '退回');
+    const btns = r.querySelectorAll('button');
+    btns[0].onclick = () => setStatus(d, '已处理');
+    btns[1].onclick = () => setStatus(d, '未处理');
+    sl.appendChild(r);
+  });
+
+  // picks
+  const picks = pend.filter(d => (d.x || 0) >= 2).sort((a, b) => (b.x || 0) - (a.x || 0)).slice(0, 8);
+  const pl = $('pickList'); pl.innerHTML = '';
+  if (!picks.length) pl.innerHTML = '<div class="none">暂时没有 ×2 以上的未处理爆款 — 等周一自动抓新数据</div>';
+  picks.forEach(d => {
+    const r = document.createElement('div'); r.className = 'row';
+    r.innerHTML = '<span class="xb">×' + d.x + '</span>'
+      + '<a class="who2" href="' + chUrl(d.competitor) + '" target="_blank">' + esc(d.competitor) + '</a>'
+      + '<span class="hookline">' + esc(firstLine(d.caption))
+      + '<small>🔥' + d.score + ' · ER ' + d.er + '% · 💬' + fmt(d.comments) + '</small></span>'
+      + '<a class="pill" href="' + d.url + '" target="_blank">' + I('ext') + '原帖</a>'
+      + pillBtn('ok', 'video', '选中拍摄') + pillBtn('bad', 'x', '跳过');
+    const btns = r.querySelectorAll('button');
+    btns[0].onclick = () => setStatus(d, '拍摄中');
+    btns[1].onclick = () => setStatus(d, '跳过');
+    pl.appendChild(r);
+  });
+  renderMission();
+}
+
+function applyStatusCache() {
+  try {
+    const c = JSON.parse(localStorage.getItem('st_cache') || '{}');
+    Object.keys(c).forEach(rid => { const d = byRec[rid]; if (d) d.status = c[rid]; });
+  } catch (e) {}
+}
+
+function cacheStatus(rid, val) {
+  try {
+    const c = JSON.parse(localStorage.getItem('st_cache') || '{}');
+    c[rid] = val; localStorage.setItem('st_cache', JSON.stringify(c));
+  } catch (e) {}
+}
+
+// ---- live statuses from Supabase ----
+async function refreshStatuses() {
+  applyStatusCache(); renderWork();  // last-known statuses first
+  if (Date.now() - (+localStorage.getItem('st_ts') || 0) < 600000) return;  // 10-min throttle
+  localStorage.setItem('st_ts', String(Date.now()));
+  const fresh = {};
+  try {
+    const r = await fetch(SUPA + '/rest/v1/posts?select=post_id,status', { headers: { 'apikey': ANON } });
+    if (!r.ok) return;
+    (await r.json()).forEach(row => {
+      const d = byRec[row.post_id];
+      if (d) d.status = row.status || '未处理';
+      if (row.status && row.status !== '未处理') fresh[row.post_id] = row.status;
+    });
+    localStorage.setItem('st_cache', JSON.stringify(fresh));
+    renderWork();
+  } catch (e) {}
+}
+
+orderSections();
+renderMission();
+renderWork();
+refreshStatuses();
+</script>
+</body>
+</html>
