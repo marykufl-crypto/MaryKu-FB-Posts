@@ -413,6 +413,14 @@ def main():
                       {"startUrls": start_urls, "resultsLimit": RESULTS_LIMIT,
                        "onlyPostsNewerThan": f"{DAYS_BACK} days"}, "Step 2 posts")
     print(f"  scraped {len(posts)} posts (last {DAYS_BACK} days, <= {RESULTS_LIMIT}/page)")
+    errs = [p for p in posts if p.get("error")]
+    for p in errs[:6]:
+        print(f"  Apify error item: {str(p.get('url'))[:80]} -> "
+              f"{str(p.get('error'))[:60]} / {str(p.get('errorDescription'))[:160]}")
+    perr = [p for p in pages if p.get("error")]
+    for p in perr[:6]:
+        print(f"  Apify page error: {str(p.get('url'))[:80]} -> "
+              f"{str(p.get('error'))[:60]} / {str(p.get('errorDescription'))[:160]}")
     if posts:
         print(f"  (sample post item keys: {sorted(posts[0].keys())[:30]})")
 
